@@ -105,6 +105,9 @@ export default function Header() {
           Follow Us and get a chance to win 80% off
         </p>
         <div className="flex items-center justify-center gap-4 sm:justify-end">
+          <span className="text-sm font-semibold leading-snug text-white">
+            Follow Us :
+          </span>
           <a
             href="https://instagram.com"
             target="_blank"

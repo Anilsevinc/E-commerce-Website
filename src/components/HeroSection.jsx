@@ -25,6 +25,13 @@ const heroSlides = [
 export default function HeroSection() {
   const [activeSlide, setActiveSlide] = useState(0)
   const currentSlide = heroSlides[activeSlide]
+  const descriptionParts = currentSlide.description.split(',')
+  const desktopDescLine1 =
+    descriptionParts.length > 0 ? `${descriptionParts[0]},` : ''
+  const desktopDescLine2 =
+    descriptionParts.length > 1
+      ? descriptionParts.slice(1).join(',').trim()
+      : ''
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -36,7 +43,6 @@ export default function HeroSection() {
 
   return (
     <section className="flex w-full justify-center px-4 pb-6 pt-0 sm:px-6 sm:pt-5 lg:px-8 lg:pb-8 lg:pt-6">
-      {/* Mobil — 388×816; görsel 453 sabit */}
       <div className="flex h-[816px] w-full max-w-[400px] flex-col overflow-hidden rounded-[20px] bg-gradient-to-r from-[#96E9FB] to-[#ABECD6] lg:hidden">
         <div className="flex flex-1 flex-col items-center justify-center gap-7 px-4 pb-4 pt-10 text-center">
           <p className="text-[16px] font-bold uppercase leading-[24px] tracking-[0.1px] text-[#2A7CC7]">
@@ -77,7 +83,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Masaüstü */}
       <div className="hidden w-full max-w-[1292px] min-h-0 flex-col overflow-hidden rounded-[20px] bg-gradient-to-r from-[#96E9FB] to-[#ABECD6] lg:flex lg:h-[622px] lg:flex-row lg:items-stretch">
         <div className="flex flex-1 flex-col items-start justify-center gap-5 px-12 py-12 text-left">
           <p className="text-base font-bold uppercase tracking-wide text-brand">
@@ -87,7 +92,15 @@ export default function HeroSection() {
             {currentSlide.titleLine1} {currentSlide.titleLine2}
           </h1>
           <h4 className="max-w-md text-base font-semibold leading-relaxed text-muted">
-            {currentSlide.description}
+            {desktopDescLine2 ? (
+              <>
+                {desktopDescLine1}
+                <br />
+                {desktopDescLine2}
+              </>
+            ) : (
+              currentSlide.description
+            )}
           </h4>
           <div className="flex w-full justify-start">
             <Link to="/shop" className="hero-shop-btn">

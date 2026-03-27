@@ -20,13 +20,11 @@
   }
 }
 
-/* Hero CTA — spec: 221×62, padding 15/40, radius 5, gap 10 */
 @layer components {
   .hero-shop-btn {
     @apply inline-flex h-[62px] w-[221px] shrink-0 items-center justify-center gap-[10px] rounded-[5px] border-0 bg-brand px-10 py-[15px] text-center text-sm font-bold uppercase tracking-wide text-white outline-none transition-opacity hover:opacity-90;
   }
 
-  /* Mobil hero — SHOP NOW (24/32, 221×62, gap 10) */
   .hero-shop-btn-mobile {
     @apply inline-flex h-[62px] w-[221px] shrink-0 items-center justify-center gap-[10px] rounded-[5px] border-0 bg-brand text-center font-bold uppercase text-white outline-none transition-opacity hover:opacity-90;
     font-size: 24px;

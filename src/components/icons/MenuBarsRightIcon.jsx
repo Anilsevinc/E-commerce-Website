@@ -1,4 +1,3 @@
-/** Sağa hizalı üç yatay çizgi (referans menü ikonu) */
 export default function MenuBarsRightIcon({ className = 'h-6 w-6' }) {
   return (
     <svg
