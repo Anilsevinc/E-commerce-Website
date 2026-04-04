@@ -239,6 +239,7 @@ export default function HomePage() {
               }
             >
               <ProductCard
+                to={`/product/${p.id}`}
                 image={p.image}
                 title={p.title}
                 subtitle={p.subtitle}

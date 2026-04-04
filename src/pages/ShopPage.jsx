@@ -169,6 +169,7 @@ export default function ShopPage() {
             {shopProducts.map((p) => (
               <ProductCard
                 key={p.id}
+                to={`/product/${encodeURIComponent(p.id)}`}
                 image={p.image}
                 title={p.title}
                 subtitle={p.subtitle}
@@ -183,6 +184,7 @@ export default function ShopPage() {
             {shopProducts.map((p) => (
               <ProductCard
                 key={p.id}
+                to={`/product/${encodeURIComponent(p.id)}`}
                 image={p.image}
                 title={p.title}
                 subtitle={p.subtitle}

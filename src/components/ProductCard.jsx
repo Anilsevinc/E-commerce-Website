@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function ProductCard({
   image,
   title,
@@ -6,6 +8,7 @@ export default function ProductCard({
   newPrice,
   showSwatches = false,
   listLayout = false,
+  to,
 }) {
   const imageBlock = (
     <div
@@ -75,19 +78,28 @@ export default function ProductCard({
     </div>
   )
 
-  if (listLayout) {
-    return (
-      <article className="flex w-full flex-row items-center gap-4 lg:min-h-0">
-        {imageBlock}
-        {textBlock}
-      </article>
-    )
-  }
-
-  return (
+  const article = listLayout ? (
+    <article className="flex w-full flex-row items-center gap-4 lg:min-h-0">
+      {imageBlock}
+      {textBlock}
+    </article>
+  ) : (
     <article className="flex w-full flex-col items-center gap-4 lg:min-h-0">
       {imageBlock}
       {textBlock}
     </article>
   )
+
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className="block text-inherit no-underline outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+      >
+        {article}
+      </Link>
+    )
+  }
+
+  return article
 }
