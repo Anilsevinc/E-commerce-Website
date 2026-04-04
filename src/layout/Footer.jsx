@@ -1,10 +1,20 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Facebook, Instagram, Twitter } from 'lucide-react'
 
 export default function Footer() {
+  const { pathname } = useLocation()
+  const isContactPage = pathname === '/contact'
+  const footerLgInset = isContactPage
+    ? 'lg:px-[clamp(1rem,13.54vw,195px)]'
+    : 'lg:px-[11%]'
+
   return (
     <footer className="mt-auto flex w-full flex-col bg-white">
-      <div className="flex flex-col gap-6 bg-[#FAFAFA] px-4 py-8 md:flex-row md:items-center md:justify-between md:px-8 lg:px-[11%]">
+      <div
+        className={`flex flex-col gap-6 px-4 py-8 md:flex-row md:items-center md:justify-between md:px-8 ${footerLgInset} ${
+          isContactPage ? 'bg-white' : 'bg-[#FAFAFA]'
+        }`}
+      >
         <Link
           to="/"
           className="text-2xl font-bold tracking-tight text-neutral-900"
@@ -42,7 +52,15 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-10 px-4 py-12 md:px-8 lg:flex-row lg:flex-wrap lg:justify-between lg:gap-12 lg:px-[11%]">
+      {isContactPage && (
+        <div className={`bg-white px-4 md:px-8 ${footerLgInset}`}>
+          <div className="h-px w-full bg-neutral-200" aria-hidden />
+        </div>
+      )}
+
+      <div
+        className={`flex flex-col gap-10 px-4 py-12 md:px-8 lg:flex-row lg:flex-wrap lg:justify-between lg:gap-12 ${footerLgInset}`}
+      >
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           <h3 className="text-base font-bold text-neutral-900">Company Info</h3>
           <nav className="flex flex-col gap-3">
@@ -165,7 +183,9 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="bg-neutral-100 px-4 py-6 text-center md:px-8 lg:px-[11%] lg:text-left">
+      <div
+        className={`bg-neutral-100 px-4 py-6 text-center md:px-8 lg:text-left ${footerLgInset}`}
+      >
         <p className="text-sm font-semibold text-muted">
           <span className="lg:hidden">
             Made With Love By
