@@ -4,27 +4,90 @@ export default function ProductCard({
   subtitle,
   oldPrice,
   newPrice,
+  showSwatches = false,
+  listLayout = false,
 }) {
+  const imageBlock = (
+    <div
+      className={
+        listLayout
+          ? 'aspect-[3/4] w-full max-w-[140px] shrink-0 overflow-hidden sm:max-w-[180px] lg:max-w-[220px]'
+          : 'aspect-[3/4] w-full overflow-hidden'
+      }
+    >
+      <img
+        src={image}
+        alt=""
+        className="h-full w-full object-cover object-center"
+        loading="lazy"
+      />
+    </div>
+  )
+
+  const textBlock = (
+    <div
+      className={
+        listLayout
+          ? 'flex min-w-0 flex-1 flex-col items-start gap-2 text-left'
+          : 'flex flex-col items-center gap-2 text-center'
+      }
+    >
+      <h3 className="text-base font-bold text-neutral-900">{title}</h3>
+      <p className="text-sm font-semibold text-muted">{subtitle}</p>
+      <div
+        className={
+          listLayout
+            ? 'flex flex-wrap items-center gap-2'
+            : 'flex flex-wrap items-center justify-center gap-2'
+        }
+      >
+        <span className="text-sm font-semibold text-muted line-through">
+          {oldPrice}
+        </span>
+        <span className="text-base font-bold text-price-new">{newPrice}</span>
+      </div>
+      {showSwatches ? (
+        <div
+          className={
+            listLayout
+              ? 'flex items-center gap-2 pt-1'
+              : 'flex items-center justify-center gap-2 pt-1'
+          }
+        >
+          <span
+            className="h-4 w-4 rounded-full border border-neutral-200 bg-sky-400"
+            aria-hidden
+          />
+          <span
+            className="h-4 w-4 rounded-full border border-neutral-200 bg-orange-500"
+            aria-hidden
+          />
+          <span
+            className="h-4 w-4 rounded-full border border-neutral-200 bg-teal-500"
+            aria-hidden
+          />
+          <span
+            className="h-4 w-4 rounded-full border border-neutral-200 bg-[#252B42]"
+            aria-hidden
+          />
+        </div>
+      ) : null}
+    </div>
+  )
+
+  if (listLayout) {
+    return (
+      <article className="flex w-full flex-row items-center gap-4 lg:min-h-0">
+        {imageBlock}
+        {textBlock}
+      </article>
+    )
+  }
+
   return (
     <article className="flex w-full flex-col items-center gap-4 lg:min-h-0">
-      <div className="aspect-[3/4] w-full overflow-hidden">
-        <img
-          src={image}
-          alt=""
-          className="h-full w-full object-cover object-center"
-          loading="lazy"
-        />
-      </div>
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h3 className="text-base font-bold text-neutral-900">{title}</h3>
-        <p className="text-sm font-semibold text-muted">{subtitle}</p>
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="text-sm font-semibold text-muted line-through">
-            {oldPrice}
-          </span>
-          <span className="text-base font-bold text-price-new">{newPrice}</span>
-        </div>
-      </div>
+      {imageBlock}
+      {textBlock}
     </article>
   )
 }

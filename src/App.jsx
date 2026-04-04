@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './layout/Layout'
 import HomePage from './pages/HomePage'
+import ShopPage from './pages/ShopPage'
 import PagePlaceholder from './pages/PagePlaceholder'
 
 function App() {
@@ -9,7 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="shop" element={<PagePlaceholder title="Shop" />} />
+          <Route path="shop" element={<ShopPage />} />
           <Route path="about" element={<PagePlaceholder title="About" />} />
           <Route path="blog" element={<PagePlaceholder title="Blog" />} />
           <Route path="contact" element={<PagePlaceholder title="Contact" />} />
