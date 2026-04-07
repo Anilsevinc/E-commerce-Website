@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css'
 export default function Layout() {
   return (
     <div className="flex min-h-screen w-full flex-col font-sans">
-      <ToastContainer position="top-center" />
+      <ToastContainer position="top-right" />
       <NavigationWarningToast />
       <Header />
       <MobileHeroNav />

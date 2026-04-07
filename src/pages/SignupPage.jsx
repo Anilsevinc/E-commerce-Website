@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { api } from '../lib/api'
+import { fetchRolesIfNeeded } from '../store/client/client.thunks'
 
 const PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/
@@ -18,11 +21,12 @@ function FieldError({ message }) {
 export default function SignupPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [roles, setRoles] = useState([])
   const [rolesLoading, setRolesLoading] = useState(true)
   const [rolesError, setRolesError] = useState('')
   const [submitError, setSubmitError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const dispatch = useDispatch()
+  const roles = useSelector((s) => s.client.roles)
 
   const defaultRoleId = useMemo(() => {
     const customer = roles.find(
@@ -68,10 +72,8 @@ export default function SignupPage() {
       try {
         setRolesLoading(true)
         setRolesError('')
-        const res = await api.get('/roles')
-        const list = Array.isArray(res.data) ? res.data : res.data?.roles
+        await dispatch(fetchRolesIfNeeded())
         if (!alive) return
-        setRoles(Array.isArray(list) ? list : [])
       } catch (err) {
         if (!alive) return
         setRolesError('Failed to load roles. Please try again.')
@@ -84,7 +86,7 @@ export default function SignupPage() {
     return () => {
       alive = false
     }
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     if (!rolesLoading && defaultRoleId) {
@@ -127,12 +129,20 @@ export default function SignupPage() {
 
     try {
       await api.post('/signup', payload)
-      const backTo = location.state?.from ?? -1
-      navigate(backTo, {
-        state: {
-          warning: 'You need to click link in email to activate your account!',
-        },
-      })
+      toast.success('Kayıt başarılı.', { autoClose: 2500 })
+
+      const warning = 'You need to click link in email to activate your account!'
+
+      // `navigate(-1, { state })` does not carry state in React Router.
+      // So we show toast immediately, then go back.
+      toast.warning(warning, { autoClose: 6000 })
+
+      const backTo = location.state?.from
+      if (typeof backTo === 'string') {
+        navigate(backTo, { state: { warning } })
+      } else {
+        navigate(-1)
+      }
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
