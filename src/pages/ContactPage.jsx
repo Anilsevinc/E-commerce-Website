@@ -5,6 +5,7 @@ import {
   MoveDown,
   Twitter,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import heroCover from '../assets/hero-cover.png'
 import phoneIconAsset from '../assets/Phone.png'
@@ -142,12 +143,12 @@ export default function ContactPage() {
           <h2 className="mt-4 text-4xl font-bold text-neutral-900 md:text-5xl lg:text-[58px] lg:leading-tight">
             Let&apos;s Talk
           </h2>
-          <button
-            type="button"
+          <Link
+            to="/team"
             className="mt-10 inline-flex min-h-[52px] min-w-[200px] items-center justify-center rounded-md bg-brand px-10 text-sm font-bold text-white transition-opacity hover:opacity-90"
           >
             Try it free now
-          </button>
+          </Link>
         </div>
       </section>
     </div>
