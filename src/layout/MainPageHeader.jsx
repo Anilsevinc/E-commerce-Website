@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -19,6 +19,7 @@ import {
 import MenuBarsRightIcon from '../components/icons/MenuBarsRightIcon'
 import Gravatar from '../components/Gravatar'
 import { logoutUser } from '../store/client/client.thunks'
+import { categoryRoute, genderPath } from '../lib/category'
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -94,6 +95,17 @@ export default function MainPageHeader() {
   const location = useLocation()
   const navigate = useNavigate()
   const from = location.pathname + location.search
+  const categories = useSelector((s) => s.product.categories)
+
+  const groupedCategories = useMemo(() => {
+    const list = Array.isArray(categories) ? categories : []
+    const kadin = list.filter((c) => String(c.gender).toLowerCase() === 'k')
+    const erkek = list.filter((c) => String(c.gender).toLowerCase() === 'e')
+    const byTitle = (a, b) => String(a.title).localeCompare(String(b.title), 'tr')
+    kadin.sort(byTitle)
+    erkek.sort(byTitle)
+    return { kadin, erkek }
+  }, [categories])
 
   async function onLogout() {
     await dispatch(logoutUser())
@@ -229,12 +241,57 @@ export default function MainPageHeader() {
               <NavLink to="/" end className={navLinkClass}>
                 Home
               </NavLink>
-              <NavLink to="/shop" className={navLinkClass}>
-                <span className="inline-flex items-center gap-1">
-                  Shop
-                  <ChevronDown className="h-4 w-4" aria-hidden />
-                </span>
-              </NavLink>
+              <div className="relative group">
+                <NavLink to="/shop" className={navLinkClass}>
+                  <span className="inline-flex items-center gap-1">
+                    Shop
+                    <ChevronDown className="h-4 w-4" aria-hidden />
+                  </span>
+                </NavLink>
+
+                <div className="pointer-events-none absolute left-1/2 top-full z-50 hidden w-[560px] -translate-x-1/2 pt-4 group-hover:block">
+                  <div className="pointer-events-auto rounded-xl border border-neutral-200 bg-white p-6 shadow-lg">
+                    <div className="grid grid-cols-2 gap-8">
+                      <div>
+                        <p className="text-sm font-bold text-brand-dark">Kadin</p>
+                        <div className="mt-4 flex flex-col gap-3">
+                          {groupedCategories.kadin.map((c) => (
+                            <Link
+                              key={c.id}
+                              to={categoryRoute(c)}
+                              className="text-sm font-semibold text-muted hover:text-brand"
+                            >
+                              {c.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-brand-dark">Erkek</p>
+                        <div className="mt-4 flex flex-col gap-3">
+                          {groupedCategories.erkek.map((c) => (
+                            <Link
+                              key={c.id}
+                              to={categoryRoute(c)}
+                              className="text-sm font-semibold text-muted hover:text-brand"
+                            >
+                              {c.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-6 flex items-center justify-between text-xs font-semibold text-muted">
+                      <span>
+                        Total: {groupedCategories.kadin.length + groupedCategories.erkek.length}
+                      </span>
+                      <span>
+                        Routes: {genderPath('k')}/... , {genderPath('e')}/...
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <NavLink to="/about" className={navLinkClass}>
                 About
               </NavLink>

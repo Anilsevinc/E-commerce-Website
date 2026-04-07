@@ -18,6 +18,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="shop" element={<ShopPage />} />
+          <Route path="shop/:gender/:categoryName/:categoryId" element={<ShopPage />} />
           <Route path="product/:id" element={<ProductDetailPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="blog" element={<PagePlaceholder title="Blog" />} />

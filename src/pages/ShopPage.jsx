@@ -1,14 +1,9 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import { LayoutGrid, List } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import ShopPagination from '../components/ShopPagination'
-
-import shop1 from '../assets/shop-1.png'
-import shop2 from '../assets/shop-2.png'
-import shop3 from '../assets/shop-3.png'
-import shop4 from '../assets/shop-4.png'
-import shop5 from '../assets/shop-5.png'
 
 import hooli from '../assets/hooli-brands.png'
 import lyft from '../assets/lyft-brands.png'
@@ -23,7 +18,8 @@ import stripeMobileLogo from '../assets/stripe-logo.png'
 import awsMobileLogo from '../assets/aws-logo.png'
 import redditMobileLogo from '../assets/reddit-logo.png'
 
-const categoryImages = [shop1, shop2, shop3, shop4, shop5]
+import { categoryRoute, genderPath, slugifyTR } from '../lib/category'
+import { fetchProducts } from '../store/product/product.thunks'
 
 const brands = [
   { id: 'hooli', src: hooli, mobileSrc: hooliMobileLogo, alt: 'Hooli' },
@@ -34,28 +30,67 @@ const brands = [
   { id: 'reddit', src: reddit, mobileSrc: redditMobileLogo, alt: 'Reddit' },
 ]
 
-const productImages = [shop1, shop2, shop3, shop4, shop5]
-
-const shopProducts = Array.from({ length: 12 }, (_, i) => ({
-  id: `shop-p-${i + 1}`,
-  image: productImages[i % 5],
-  title: 'Graphic Design',
-  subtitle: 'English Department',
-  oldPrice: '$16.48',
-  newPrice: '$6.48',
-}))
-
 export default function ShopPage() {
+  const dispatch = useDispatch()
   const [viewMode, setViewMode] = useState('grid')
   const [currentPage, setCurrentPage] = useState(1)
+  const [sortDraft, setSortDraft] = useState('')
+  const [sort, setSort] = useState('')
+  const [filterText, setFilterText] = useState('')
+  const categories = useSelector((s) => s.product.categories)
+  const productList = useSelector((s) => s.product.productList)
+  const total = useSelector((s) => s.product.total)
+  const fetchState = useSelector((s) => s.product.fetchState)
+  const limit = useSelector((s) => s.product.limit)
+  const params = useParams()
+  const selectedCategoryId = params.categoryId
+
+  const top5Categories = useMemo(() => {
+    const list = Array.isArray(categories) ? [...categories] : []
+    list.sort((a, b) => Number(b?.rating || 0) - Number(a?.rating || 0))
+    return list.slice(0, 5)
+  }, [categories])
+
+  const selectedCategory = useMemo(() => {
+    if (!selectedCategoryId) return null
+    return (Array.isArray(categories) ? categories : []).find(
+      (c) => String(c.id) === String(selectedCategoryId)
+    )
+  }, [categories, selectedCategoryId])
+
+  const totalPages = Math.max(1, Math.ceil((Number(total) || 0) / (Number(limit) || 25)))
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedCategoryId, sort, filterText])
+
+  useEffect(() => {
+    const offset = (currentPage - 1) * (Number(limit) || 25)
+    dispatch(
+      fetchProducts({
+        limit,
+        offset,
+        categoryId: selectedCategoryId,
+        sort: sort || undefined,
+        filter: filterText?.trim() || undefined,
+      })
+    )
+  }, [dispatch, currentPage, limit, selectedCategoryId, sort, filterText])
 
   return (
     <div className="flex w-full max-w-[1920px] flex-col">
       <section className="w-full bg-neutral-100">
         <div className="mx-auto flex w-full max-w-[1920px] flex-col gap-4 px-3 py-8 md:flex-row md:items-center md:justify-between md:px-8 lg:px-[11%] lg:py-10">
-          <h1 className="text-center text-2xl font-bold text-neutral-900 md:text-left md:text-3xl lg:text-4xl">
-            Shop
-          </h1>
+          <div className="flex flex-col items-center gap-1 md:items-start">
+            <h1 className="text-center text-2xl font-bold text-neutral-900 md:text-left md:text-3xl lg:text-4xl">
+              Shop
+            </h1>
+            {selectedCategory ? (
+              <p className="text-sm font-semibold text-muted">
+                {genderPath(selectedCategory.gender)} / {selectedCategory.title}
+              </p>
+            ) : null}
+          </div>
           <nav
             className="flex items-center justify-center gap-1 text-sm font-semibold md:justify-end"
             aria-label="Breadcrumb"
@@ -77,22 +112,24 @@ export default function ShopPage() {
 
       <section className="w-full px-3 py-8 md:px-8 lg:px-[11%] lg:py-10">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-4">
-          {categoryImages.map((src, idx) => (
+          {top5Categories.map((c) => (
             <Link
-              key={`shop-cat-${idx}`}
-              to="/shop"
+              key={c.id}
+              to={categoryRoute(c)}
               className="group relative block aspect-[4/5] w-full max-w-full overflow-hidden sm:aspect-[3/4]"
             >
               <img
-                src={src}
-                alt=""
+                src={c.img}
+                alt={c.title}
                 className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/35 px-2 text-center text-white">
                 <span className="text-base font-bold uppercase tracking-wide lg:text-lg">
-                  CLOTHS
+                  {slugifyTR(c.title).toUpperCase()}
                 </span>
-                <span className="mt-1 text-sm font-semibold">5 Items</span>
+                <span className="mt-1 text-sm font-semibold">
+                  Rating {Number(c.rating || 0).toFixed(1)}
+                </span>
               </div>
             </Link>
           ))}
@@ -102,7 +139,7 @@ export default function ShopPage() {
       <section className="w-full border-y border-neutral-200 bg-white px-3 py-6 md:px-8 lg:px-[11%]">
         <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-6 lg:max-w-none lg:flex-row lg:items-center lg:justify-between lg:gap-8">
           <p className="text-center text-sm font-semibold text-muted lg:text-left">
-            Showing all 12 results
+            Showing {(Array.isArray(productList) ? productList.length : 0)} of {total} results
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-6">
@@ -144,17 +181,30 @@ export default function ShopPage() {
               </label>
               <select
                 id="shop-sort"
-                defaultValue="popularity"
+                value={sortDraft}
+                onChange={(e) => setSortDraft(e.target.value)}
                 className="min-h-[44px] w-full rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-900 outline-none focus:border-brand sm:w-auto"
               >
-                <option value="popularity">Popularity</option>
-                <option value="newest">Newest</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
+                <option value="">Sort</option>
+                <option value="price:asc">price:asc</option>
+                <option value="price:desc">price:desc</option>
+                <option value="rating:asc">rating:asc</option>
+                <option value="rating:desc">rating:desc</option>
               </select>
+              <label htmlFor="shop-filter" className="sr-only">
+                Filter products
+              </label>
+              <input
+                id="shop-filter"
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
+                placeholder="Filter (e.g. siyah)"
+                className="min-h-[44px] w-full rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-900 outline-none focus:border-brand sm:w-[220px]"
+              />
               <button
                 type="button"
                 className="inline-flex min-h-[44px] min-w-[120px] items-center justify-center rounded-md bg-brand px-6 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                onClick={() => setSort(sortDraft)}
               >
                 Filter
               </button>
@@ -164,32 +214,39 @@ export default function ShopPage() {
       </section>
 
       <section className="w-full px-3 pb-4 pt-2 md:px-8 lg:px-[11%] lg:pb-8 lg:pt-4">
-        {viewMode === 'grid' ? (
+        {fetchState === 'FETCHING' ? (
+          <div className="flex w-full items-center justify-center py-16">
+            <div className="flex items-center gap-3 text-sm font-semibold text-muted">
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-brand/30 border-t-brand" />
+              Loading products...
+            </div>
+          </div>
+        ) : viewMode === 'grid' ? (
           <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-            {shopProducts.map((p) => (
+            {productList.map((p) => (
               <ProductCard
                 key={p.id}
                 to={`/product/${encodeURIComponent(p.id)}`}
-                image={p.image}
-                title={p.title}
-                subtitle={p.subtitle}
-                oldPrice={p.oldPrice}
-                newPrice={p.newPrice}
+                image={p.images?.[0]?.url}
+                title={p.name}
+                subtitle={p.description}
+                oldPrice=""
+                newPrice={`$${Number(p.price || 0).toFixed(2)}`}
                 showSwatches
               />
             ))}
           </div>
         ) : (
           <div className="flex w-full flex-col gap-8">
-            {shopProducts.map((p) => (
+            {productList.map((p) => (
               <ProductCard
                 key={p.id}
                 to={`/product/${encodeURIComponent(p.id)}`}
-                image={p.image}
-                title={p.title}
-                subtitle={p.subtitle}
-                oldPrice={p.oldPrice}
-                newPrice={p.newPrice}
+                image={p.images?.[0]?.url}
+                title={p.name}
+                subtitle={p.description}
+                oldPrice=""
+                newPrice={`$${Number(p.price || 0).toFixed(2)}`}
                 showSwatches
                 listLayout
               />
@@ -201,7 +258,7 @@ export default function ShopPage() {
       <div className="w-full px-3 md:px-8 lg:px-[11%]">
         <ShopPagination
           currentPage={currentPage}
-          totalPages={3}
+          totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
       </div>

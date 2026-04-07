@@ -8,12 +8,14 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useDispatch } from 'react-redux'
 import { verifyTokenOnLoad } from '../store/client/client.thunks'
+import { fetchCategoriesIfNeeded } from '../store/product/product.thunks'
 
 export default function Layout() {
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(verifyTokenOnLoad())
+    dispatch(fetchCategoriesIfNeeded())
   }, [dispatch])
 
   return (

@@ -2,6 +2,10 @@ import FeaturedPostCard from '../components/FeaturedPostCard'
 import HeroSection from '../components/HeroSection'
 import ProductCard from '../components/ProductCard'
 import TopProductWeekCard from '../components/TopProductWeekCard'
+import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useSelector } from 'react-redux'
+import { categoryRoute } from '../lib/category'
 
 import hooli from '../assets/hooli-brands.png'
 import lyft from '../assets/lyft-brands.png'
@@ -156,6 +160,13 @@ const featuredPosts = [
 ]
 
 export default function HomePage() {
+  const categories = useSelector((s) => s.product.categories)
+  const top5Categories = useMemo(() => {
+    const list = Array.isArray(categories) ? [...categories] : []
+    list.sort((a, b) => Number(b?.rating || 0) - Number(a?.rating || 0))
+    return list.slice(0, 5)
+  }, [categories])
+
   return (
     <div className="flex w-full max-w-[1920px] flex-col items-center gap-y-[80px] md:gap-y-0">
       <HeroSection />
@@ -172,6 +183,37 @@ export default function HomePage() {
               />
             </picture>
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto w-full px-3 pt-0 md:px-8 lg:px-[11%]">
+        <div className="mx-auto w-full max-w-[1440px]">
+          <h2 className="text-center text-xl font-bold text-brand-dark md:text-2xl">
+            Top Categories
+          </h2>
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {top5Categories.map((c) => (
+              <Link
+                key={c.id}
+                to={categoryRoute(c)}
+                className="group relative block aspect-[4/5] w-full overflow-hidden bg-neutral-100"
+              >
+                <img
+                  src={c.img}
+                  alt={c.title}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/35 px-2 text-center text-white">
+                  <span className="text-base font-bold uppercase tracking-wide">
+                    {c.title}
+                  </span>
+                  <span className="mt-1 text-sm font-semibold">
+                    Rating {Number(c.rating || 0).toFixed(1)}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
