@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import { ArrowRight, X } from 'lucide-react'
 
 import MenuBarsRightIcon from '../components/icons/MenuBarsRightIcon'
+import Gravatar from '../components/Gravatar'
+import { logoutUser } from '../store/client/client.thunks'
 
 const contactNavLinkClass = ({ isActive }) =>
   [
@@ -11,7 +14,18 @@ const contactNavLinkClass = ({ isActive }) =>
   ].join(' ')
 
 export default function InnerPagesHeader() {
+  const dispatch = useDispatch()
   const [mobileContactNavOpen, setMobileContactNavOpen] = useState(false)
+  const user = useSelector((s) => s.client.user)
+  const isLoggedIn = Boolean(user?.token || user?.email)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const from = location.pathname + location.search
+
+  async function onLogout() {
+    await dispatch(logoutUser())
+    navigate('/')
+  }
 
   useEffect(() => {
     // Close on unmount (route change)
@@ -81,18 +95,33 @@ export default function InnerPagesHeader() {
               </NavLink>
               <Link
                 to="/login"
+                state={{ from }}
                 className="text-sm font-semibold text-brand"
                 onClick={() => setMobileContactNavOpen(false)}
               >
-                Login
+                {isLoggedIn ? `Hi, ${user?.name || user?.email}` : 'Login'}
               </Link>
-              <Link
-                to="/signup"
-                className="text-sm font-semibold text-brand"
-                onClick={() => setMobileContactNavOpen(false)}
-              >
-                Sign Up
-              </Link>
+              {isLoggedIn && (
+                <button
+                  type="button"
+                  className="text-sm font-semibold text-brand"
+                  onClick={() => {
+                    setMobileContactNavOpen(false)
+                    onLogout()
+                  }}
+                >
+                  Logout
+                </button>
+              )}
+              {!isLoggedIn && (
+                <Link
+                  to="/signup"
+                  className="text-sm font-semibold text-brand"
+                  onClick={() => setMobileContactNavOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              )}
               <Link
                 to="/login"
                 className="inline-flex items-center justify-center gap-2 rounded-md bg-brand px-5 py-3 text-sm font-semibold text-white"
@@ -128,12 +157,35 @@ export default function InnerPagesHeader() {
               </NavLink>
             </nav>
             <div className="flex shrink-0 items-center gap-[45px]">
-              <Link to="/login" className="whitespace-nowrap text-sm font-semibold text-brand">
-                Login
-              </Link>
-              <Link to="/signup" className="whitespace-nowrap text-sm font-semibold text-brand">
-                Sign Up
-              </Link>
+              {isLoggedIn ? (
+                <div className="flex items-center gap-2 whitespace-nowrap text-sm font-semibold text-brand-dark">
+                  <Gravatar email={user?.email} size={28} className="h-7 w-7" />
+                  <span>{user?.name || user?.email}</span>
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    className="ml-2 whitespace-nowrap text-sm font-semibold text-brand hover:opacity-80"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    state={{ from }}
+                    className="whitespace-nowrap text-sm font-semibold text-brand"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="whitespace-nowrap text-sm font-semibold text-brand"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
               <Link
                 to="/login"
                 className="inline-flex h-[52px] shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:px-5"

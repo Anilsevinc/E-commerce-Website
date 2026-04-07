@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   ChevronDown,
   Facebook,
@@ -16,6 +17,8 @@ import {
 } from 'lucide-react'
 
 import MenuBarsRightIcon from '../components/icons/MenuBarsRightIcon'
+import Gravatar from '../components/Gravatar'
+import { logoutUser } from '../store/client/client.thunks'
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -84,7 +87,18 @@ function MobileTopBarPanel() {
 }
 
 export default function MainPageHeader() {
+  const dispatch = useDispatch()
   const [mobileTopOpen, setMobileTopOpen] = useState(false)
+  const user = useSelector((s) => s.client.user)
+  const isLoggedIn = Boolean(user?.token || user?.email)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const from = location.pathname + location.search
+
+  async function onLogout() {
+    await dispatch(logoutUser())
+    navigate('/')
+  }
 
   return (
     <header className="sticky top-0 z-50 flex w-full flex-col bg-white shadow-sm">
@@ -236,16 +250,34 @@ export default function MainPageHeader() {
             </nav>
 
             <div className="hidden shrink-0 items-center gap-4 text-brand lg:ml-auto lg:flex">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <Link to="/login" className="inline-flex items-center gap-2">
-                  <User className="h-5 w-5" strokeWidth={2} aria-hidden />
-                  Login
-                </Link>
-                <span aria-hidden className="text-brand/60">
-                  /
-                </span>
-                <Link to="/signup">Register</Link>
-              </div>
+              {isLoggedIn ? (
+                <div className="flex items-center gap-2 text-sm font-semibold text-brand-dark">
+                  <Gravatar email={user?.email} size={28} className="h-7 w-7" />
+                  <span>Hi, {user?.name || user?.email}</span>
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    className="ml-2 text-sm font-semibold text-brand hover:opacity-80"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Link
+                    to="/login"
+                    state={{ from }}
+                    className="inline-flex items-center gap-2"
+                  >
+                    <User className="h-5 w-5" strokeWidth={2} aria-hidden />
+                    Login
+                  </Link>
+                  <span aria-hidden className="text-brand/60">
+                    /
+                  </span>
+                  <Link to="/signup">Register</Link>
+                </div>
+              )}
               <button
                 type="button"
                 className="flex h-10 w-10 items-center justify-center rounded-md"

@@ -10,6 +10,7 @@ const linkClass = ({ isActive }) =>
 export default function MobileHeroNav() {
   const { pathname } = useLocation()
   const showAccountBlock = pathname === '/shop' || pathname.startsWith('/product/')
+  const from = pathname
 
   return (
     <nav
@@ -45,6 +46,7 @@ export default function MobileHeroNav() {
 
           <Link
             to="/login"
+            state={{ from }}
             className="inline-flex items-center justify-center gap-2 text-brand transition-opacity hover:opacity-80"
           >
             <User className="h-6 w-6 shrink-0" strokeWidth={2} aria-hidden />
