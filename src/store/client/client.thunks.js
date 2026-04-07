@@ -1,6 +1,6 @@
-import { api } from '../../lib/api'
+import { api, setApiAuthToken } from '../../lib/api'
 import { setRoles, setUser } from './client.actions'
-import { setStoredToken, setStoredUser } from './client.auth'
+import { getStoredToken, setStoredToken } from './client.auth'
 
 export const fetchRolesIfNeeded = () => async (dispatch, getState) => {
   const { client } = getState()
@@ -22,19 +22,36 @@ export const loginUser =
       token: res.data?.token,
     }
     dispatch(setUser(user))
-    if (rememberMe) {
-      setStoredToken(user.token)
-      setStoredUser({ name: user.name, email: user.email, role_id: user.role_id })
-    } else {
-      setStoredToken('')
-      setStoredUser(null)
-    }
+    setApiAuthToken(user.token)
+    setStoredToken(rememberMe ? user.token : '')
     return user
   }
 
 export const logoutUser = () => async (dispatch) => {
   dispatch(setUser({}))
   setStoredToken('')
-  setStoredUser(null)
+  setApiAuthToken('')
+}
+
+export const verifyTokenOnLoad = () => async (dispatch) => {
+  const token = getStoredToken()
+  if (!token) return
+
+  try {
+    setApiAuthToken(token)
+    const res = await api.get('/verify')
+    const user = {
+      name: res.data?.name,
+      email: res.data?.email,
+      role_id: res.data?.role_id,
+      token: res.data?.token || token,
+    }
+    dispatch(setUser(user))
+    setApiAuthToken(user.token)
+    setStoredToken(user.token)
+  } catch {
+    setStoredToken('')
+    setApiAuthToken('')
+  }
 }
 

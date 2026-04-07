@@ -3,7 +3,7 @@ import { thunk } from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 
 import rootReducer from './rootReducer'
-import { getStoredToken, getStoredUser } from './client/client.auth'
+import { getStoredToken } from './client/client.auth'
 
 const logger = createLogger({ collapsed: true })
 
@@ -13,24 +13,11 @@ if (import.meta.env.DEV) {
   middlewares.push(logger)
 }
 
-const token = getStoredToken()
-const storedUser = getStoredUser()
+// Do not auto-login from token without backend verify.
+// We keep token in localStorage only and verify on app load.
+getStoredToken()
 
-const preloadedState =
-  token || storedUser
-    ? {
-        client: {
-          user: { ...(storedUser || {}), ...(token ? { token } : {}) },
-          addressList: [],
-          creditCards: [],
-          roles: [],
-          theme: 'light',
-          language: 'en',
-        },
-      }
-    : undefined
-
-const store = createStore(rootReducer, preloadedState, applyMiddleware(...middlewares))
+const store = createStore(rootReducer, applyMiddleware(...middlewares))
 
 export default store
 
