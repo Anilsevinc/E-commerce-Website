@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom'
 
 import heroCover from '../assets/hero-cover.png'
+import contactMobileHero from '../assets/contact-mobile.png'
 import phoneIconAsset from '../assets/Phone.png'
 import locationIconAsset from '../assets/location.png'
 import mailIconAsset from '../assets/mail.png'
@@ -65,10 +66,61 @@ export default function ContactPage() {
     <div className="flex w-full flex-col bg-white">
       <section className="w-full pt-0 pb-12 lg:pb-16">
         {/*
-          Header ile aynı yatay çerçeve: max-w-[1440px] + clamp padding (sabit 1050 yok)
+          Header ile aynı yatay çerçeve: max-w-[1440px] + clamp padding
         */}
+        {/* Mobile hero: content + image at bottom (like design) */}
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center px-3 pt-12 pb-0 text-center md:hidden">
+          <div className="flex w-full max-w-[599px] flex-col gap-6">
+            <p className="text-sm font-bold uppercase tracking-[0.2px] text-muted">
+              CONTACT US
+            </p>
+            <h1 className="text-3xl font-bold leading-tight text-brand-dark">
+              Get in touch
+              <br />
+              today!
+            </h1>
+            <p className="text-base font-medium leading-relaxed text-muted">
+              We know how large objects will act,
+              <br />
+              but things on a small scale
+            </p>
+            <div className="flex flex-col gap-3 text-base font-bold text-neutral-900">
+              <p>
+                <span className="font-bold">Phone : </span>
+                +451 215 215
+              </p>
+              <p>
+                <span className="font-bold">Fax : </span>
+                +451 215 215
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-5">
+              {socialLinks.map(({ href, label, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-neutral-700 transition-opacity hover:opacity-70"
+                  aria-label={label}
+                >
+                  <Icon className="h-6 w-6" strokeWidth={1.75} />
+                </a>
+              ))}
+            </div>
+          </div>
+          <div className="mt-10 w-full max-w-[520px]">
+            <img
+              src={contactMobileHero}
+              alt=""
+              className="h-auto w-full object-contain"
+            />
+          </div>
+        </div>
+
+        {/* Desktop/tablet hero: background image */}
         <div
-          className="relative mx-auto flex w-full max-w-[1440px] min-h-[min(100svh,882px)] flex-col items-start justify-center bg-cover bg-center bg-no-repeat px-3 py-16 md:px-8 lg:min-h-[882px] lg:px-[clamp(1rem,13.54vw,195px)] lg:py-12"
+          className="relative mx-auto hidden w-full max-w-[1440px] min-h-[min(100svh,882px)] flex-col items-start justify-center bg-cover bg-center bg-no-repeat px-3 py-16 text-left md:flex md:px-8 lg:min-h-[882px] lg:px-[clamp(1rem,13.54vw,195px)] lg:py-12"
           style={{ backgroundImage: `url(${heroCover})` }}
         >
           <div className="relative z-10 flex w-full max-w-[599px] flex-col gap-[35px] text-left">

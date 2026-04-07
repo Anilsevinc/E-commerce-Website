@@ -4,7 +4,7 @@ import InnerPagesHeader from './InnerPagesHeader'
 import MainPageHeader from './MainPageHeader'
 
 /** Inner pages: 1050px content @ 1440 — same horizontal inset as Contact hero (logo aligns with copy) */
-const SIMPLE_HEADER_PATHS = ['/contact', '/pricing']
+const SIMPLE_HEADER_PATHS = ['/contact', '/pricing', '/about']
 
 function matchesSimpleHeader(pathname) {
   if (SIMPLE_HEADER_PATHS.includes(pathname)) return true
