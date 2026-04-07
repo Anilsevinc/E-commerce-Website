@@ -9,6 +9,7 @@ import PricingPage from './pages/PricingPage'
 import AboutPage from './pages/AboutPage'
 import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
+import ShoppingCartPage from './pages/ShoppingCartPage'
 import PagePlaceholder from './pages/PagePlaceholder'
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
           <Route path="pricing" element={<PricingPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
+          <Route path="cart" element={<ShoppingCartPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -27,6 +27,7 @@ import awsMobileLogo from '../assets/aws-logo.png'
 import redditMobileLogo from '../assets/reddit-logo.png'
 
 import { fetchProductById } from '../store/product/product.thunks'
+import { addToCart } from '../store/shoppingCart/shoppingCart.actions'
 
 const brands = [
   { id: 'hooli', src: hooli, mobileSrc: hooliMobileLogo, alt: 'Hooli' },
@@ -55,6 +56,11 @@ export default function ProductDetailPage() {
   const fetchState = useSelector((s) => s.product.selectedProductFetchState)
   const [activeImage, setActiveImage] = useState(0)
   const [activeTab, setActiveTab] = useState('description')
+
+  function onAddToCart() {
+    if (!product) return
+    dispatch(addToCart(product))
+  }
 
   useEffect(() => {
     if (!effectiveProductId) return
@@ -254,6 +260,7 @@ export default function ProductDetailPage() {
                   type="button"
                   className="flex h-12 w-12 items-center justify-center rounded-full border border-neutral-300 text-neutral-700 transition-colors hover:border-brand hover:text-brand"
                   aria-label="Add to cart"
+                  onClick={onAddToCart}
                 >
                   <ShoppingCart className="h-5 w-5" strokeWidth={2} />
                 </button>
