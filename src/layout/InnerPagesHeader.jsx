@@ -87,6 +87,13 @@ export default function InnerPagesHeader() {
                 Login
               </Link>
               <Link
+                to="/signup"
+                className="text-sm font-semibold text-brand"
+                onClick={() => setMobileContactNavOpen(false)}
+              >
+                Sign Up
+              </Link>
+              <Link
                 to="/login"
                 className="inline-flex items-center justify-center gap-2 rounded-md bg-brand px-5 py-3 text-sm font-semibold text-white"
                 onClick={() => setMobileContactNavOpen(false)}
@@ -123,6 +130,9 @@ export default function InnerPagesHeader() {
             <div className="flex shrink-0 items-center gap-[45px]">
               <Link to="/login" className="whitespace-nowrap text-sm font-semibold text-brand">
                 Login
+              </Link>
+              <Link to="/signup" className="whitespace-nowrap text-sm font-semibold text-brand">
+                Sign Up
               </Link>
               <Link
                 to="/login"

@@ -1,0 +1,60 @@
+{
+  "info": {
+    "_postman_id": "2d3ff0c7-6a6f-4ef2-9f9b-2f8ce1e46b0a",
+    "name": "Workintech FE Ecommerce API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Roles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/roles",
+          "host": ["{{baseUrl}}"],
+          "path": ["roles"]
+        }
+      }
+    },
+    {
+      "name": "Signup (Customer/Admin)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test.user@example.com\",\n  \"password\": \"Aa1!aaaa\",\n  \"role_id\": 3\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/signup",
+          "host": ["{{baseUrl}}"],
+          "path": ["signup"]
+        }
+      }
+    },
+    {
+      "name": "Signup (Store)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Store Owner\",\n  \"email\": \"store.owner@example.com\",\n  \"password\": \"Aa1!aaaa\",\n  \"role_id\": 2,\n  \"store\": {\n    \"name\": \"My Store\",\n    \"phone\": \"+90 532 123 45 67\",\n    \"tax_no\": \"T1234V123456\",\n    \"bank_account\": \"TR100006200119000006672315\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/signup",
+          "host": ["{{baseUrl}}"],
+          "path": ["signup"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://workintech-fe-ecommerce.onrender.com"
+    }
+  ]
+}
+

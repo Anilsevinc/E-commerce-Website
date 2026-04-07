@@ -7,6 +7,7 @@ import ContactPage from './pages/ContactPage'
 import TeamPage from './pages/TeamPage'
 import PricingPage from './pages/PricingPage'
 import AboutPage from './pages/AboutPage'
+import SignupPage from './pages/SignupPage'
 import PagePlaceholder from './pages/PagePlaceholder'
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="pages" element={<PagePlaceholder title="Pages" />} />
           <Route path="pricing" element={<PricingPage />} />
           <Route path="login" element={<PagePlaceholder title="Login / Register" />} />
+          <Route path="signup" element={<SignupPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

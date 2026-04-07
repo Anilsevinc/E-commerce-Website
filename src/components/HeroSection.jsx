@@ -24,6 +24,7 @@ const heroSlides = [
 
 export default function HeroSection() {
   const [activeSlide, setActiveSlide] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const currentSlide = heroSlides[activeSlide]
   const descriptionParts = currentSlide.description.split(',')
   const desktopDescLine1 =
@@ -35,16 +36,34 @@ export default function HeroSection() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % heroSlides.length)
+      setIsTransitioning(true)
+      setTimeout(() => {
+        setActiveSlide((prev) => (prev + 1) % heroSlides.length)
+        setIsTransitioning(false)
+      }, 200)
     }, 5000)
 
     return () => clearInterval(timer)
   }, [])
 
+  function goToSlide(nextIdx) {
+    if (nextIdx === activeSlide) return
+    setIsTransitioning(true)
+    setTimeout(() => {
+      setActiveSlide(nextIdx)
+      setIsTransitioning(false)
+    }, 200)
+  }
+
   return (
     <section className="flex w-full justify-center px-4 pb-6 pt-0 sm:px-6 sm:pt-5 lg:px-8 lg:pb-8 lg:pt-6">
       <div className="flex h-[816px] w-full max-w-[400px] flex-col overflow-hidden rounded-[20px] bg-gradient-to-r from-[#96E9FB] to-[#ABECD6] lg:hidden">
-        <div className="flex flex-1 flex-col items-center justify-center gap-7 px-4 pb-4 pt-10 text-center">
+        <div
+          className={[
+            'flex flex-1 flex-col items-center justify-center gap-7 px-4 pb-4 pt-10 text-center transition-opacity duration-300',
+            isTransitioning ? 'opacity-0' : 'opacity-100',
+          ].join(' ')}
+        >
           <p className="text-[16px] font-bold uppercase leading-[24px] tracking-[0.1px] text-[#2A7CC7]">
             {currentSlide.eyebrow}
           </p>
@@ -76,7 +95,7 @@ export default function HeroSection() {
               key={slide.id}
               type="button"
               aria-label={`Go to hero slide ${idx + 1}`}
-              onClick={() => setActiveSlide(idx)}
+              onClick={() => goToSlide(idx)}
               className={`h-2.5 w-2.5 rounded-full transition-colors ${idx === activeSlide ? 'bg-[#2A7CC7]' : 'bg-white/80'}`}
             />
           ))}
@@ -84,7 +103,12 @@ export default function HeroSection() {
       </div>
 
       <div className="hidden w-full max-w-[1292px] min-h-0 flex-col overflow-hidden rounded-[20px] bg-gradient-to-r from-[#96E9FB] to-[#ABECD6] lg:flex lg:h-[622px] lg:flex-row lg:items-stretch">
-        <div className="flex flex-1 flex-col items-start justify-center gap-5 px-12 py-12 text-left">
+        <div
+          className={[
+            'flex flex-1 flex-col items-start justify-center gap-5 px-12 py-12 text-left transition-opacity duration-300',
+            isTransitioning ? 'opacity-0' : 'opacity-100',
+          ].join(' ')}
+        >
           <p className="text-base font-bold uppercase tracking-wide text-brand">
             {currentSlide.eyebrow}
           </p>
@@ -113,7 +137,7 @@ export default function HeroSection() {
                 key={slide.id}
                 type="button"
                 aria-label={`Go to hero slide ${idx + 1}`}
-                onClick={() => setActiveSlide(idx)}
+                onClick={() => goToSlide(idx)}
                 className={`h-2.5 w-2.5 rounded-full transition-colors ${idx === activeSlide ? 'bg-brand' : 'bg-brand/30'}`}
               />
             ))}

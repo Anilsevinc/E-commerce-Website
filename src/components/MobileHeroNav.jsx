@@ -51,6 +51,13 @@ export default function MobileHeroNav() {
             <span className="text-base font-semibold">Login / Register</span>
           </Link>
 
+          <Link
+            to="/signup"
+            className="text-center text-base font-semibold leading-normal text-brand transition-opacity hover:opacity-80"
+          >
+            Sign Up
+          </Link>
+
           <button
             type="button"
             className="flex items-center justify-center text-brand transition-opacity hover:opacity-80"

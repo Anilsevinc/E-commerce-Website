@@ -10,6 +10,7 @@ import {
   Search,
   ShoppingCart,
   Twitter,
+  User,
   X,
   Youtube,
 } from 'lucide-react'
@@ -235,9 +236,16 @@ export default function MainPageHeader() {
             </nav>
 
             <div className="hidden shrink-0 items-center gap-4 text-brand lg:ml-auto lg:flex">
-              <Link to="/login" className="text-sm font-semibold">
-                Login / Register
-              </Link>
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <Link to="/login" className="inline-flex items-center gap-2">
+                  <User className="h-5 w-5" strokeWidth={2} aria-hidden />
+                  Login
+                </Link>
+                <span aria-hidden className="text-brand/60">
+                  /
+                </span>
+                <Link to="/signup">Register</Link>
+              </div>
               <button
                 type="button"
                 className="flex h-10 w-10 items-center justify-center rounded-md"
