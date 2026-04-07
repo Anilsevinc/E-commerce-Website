@@ -5,6 +5,7 @@ import ShopPage from './pages/ShopPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import ContactPage from './pages/ContactPage'
 import TeamPage from './pages/TeamPage'
+import PricingPage from './pages/PricingPage'
 import PagePlaceholder from './pages/PagePlaceholder'
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
           <Route path="contact" element={<ContactPage />} />
           <Route path="team" element={<TeamPage />} />
           <Route path="pages" element={<PagePlaceholder title="Pages" />} />
-          <Route path="pricing" element={<PagePlaceholder title="Pricing" />} />
+          <Route path="pricing" element={<PricingPage />} />
           <Route path="login" element={<PagePlaceholder title="Login / Register" />} />
         </Route>
       </Routes>

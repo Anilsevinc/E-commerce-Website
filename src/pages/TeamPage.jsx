@@ -7,12 +7,19 @@ import team3 from '../assets/team-3-image.jpg'
 import team4 from '../assets/team-4-image.jpg'
 import team5 from '../assets/team-5-image.jpg'
 import meetOurTeamImage from '../assets/meet-our-team-image.jpg'
+import gokhanImage from '../assets/gokhan.jpg'
+import anilImage from '../assets/anil.jpg'
 
-const memberSocials = [
-  { href: 'https://facebook.com', label: 'Facebook', Icon: Facebook },
-  { href: 'https://instagram.com', label: 'Instagram', Icon: Instagram },
-  { href: 'https://twitter.com', label: 'Twitter', Icon: Twitter },
-]
+function getMemberSocials({ linkedinUrl }) {
+  return [
+    { href: 'https://facebook.com', label: 'Facebook', Icon: Facebook },
+    { href: 'https://instagram.com', label: 'Instagram', Icon: Instagram },
+    { href: 'https://twitter.com', label: 'Twitter', Icon: Twitter },
+    ...(linkedinUrl
+      ? [{ href: linkedinUrl, label: 'LinkedIn', Icon: Linkedin }]
+      : []),
+  ]
+}
 
 const trialSocials = [
   { href: 'https://twitter.com', label: 'Twitter', Icon: Twitter },
@@ -21,20 +28,22 @@ const trialSocials = [
   { href: 'https://linkedin.com', label: 'LinkedIn', Icon: Linkedin },
 ]
 
-function TeamMemberCard({ imageSrc }) {
+function TeamMemberCard({ imageSrc, name, role, linkedinUrl }) {
+  const socials = getMemberSocials({ linkedinUrl })
+
   return (
     <div className="flex w-full flex-col items-center text-center">
       <div className="w-full overflow-hidden bg-neutral-100">
         <img
           src={imageSrc}
-          alt=""
+          alt={name}
           className="h-full w-full object-contain md:object-cover"
         />
       </div>
-      <p className="mt-5 text-sm font-bold text-neutral-900">Username</p>
-      <p className="mt-1 text-xs font-normal text-muted">Profession</p>
+      <p className="mt-5 text-sm font-bold text-neutral-900">{name}</p>
+      <p className="mt-1 text-xs font-normal text-muted">{role}</p>
       <div className="mt-3 flex items-center justify-center gap-3 text-brand">
-        {memberSocials.map(({ href, label, Icon }) => (
+        {socials.map(({ href, label, Icon }) => (
           <a
             key={label}
             href={href}
@@ -52,6 +61,27 @@ function TeamMemberCard({ imageSrc }) {
 }
 
 export default function TeamPage() {
+  const members = [
+    {
+      name: 'Gökhan Özdemir',
+      role: 'Project Manager',
+      imageSrc: gokhanImage,
+      linkedinUrl: 'https://www.linkedin.com/in/gnozdemir/',
+    },
+    {
+      name: 'Anıl',
+      role: 'Full Stack Developer',
+      imageSrc: anilImage,
+      linkedinUrl: 'https://www.linkedin.com/in/anilsevnc',
+    },
+    ...Array.from({ length: 7 }).map((_, idx) => ({
+      name: `Member ${idx + 1}`,
+      role: 'Profession',
+      imageSrc: meetOurTeamImage,
+      linkedinUrl: null,
+    })),
+  ]
+
   return (
     <div className="flex w-full flex-col bg-white">
       <section className="w-full pt-6 pb-10 lg:pt-12 lg:pb-14">
@@ -111,8 +141,14 @@ export default function TeamPage() {
           </h2>
 
           <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-x-8 md:gap-y-14">
-            {Array.from({ length: 9 }).map((_, idx) => (
-              <TeamMemberCard key={idx} imageSrc={meetOurTeamImage} />
+            {members.map((member) => (
+              <TeamMemberCard
+                key={`${member.name}-${member.role}`}
+                imageSrc={member.imageSrc}
+                name={member.name}
+                role={member.role}
+                linkedinUrl={member.linkedinUrl}
+              />
             ))}
           </div>
         </div>
