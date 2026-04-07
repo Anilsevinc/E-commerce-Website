@@ -29,6 +29,14 @@ export default function ShopPagination({
       >
         First
       </button>
+      <button
+        type="button"
+        className={currentPage === 1 ? `${btnBase} cursor-not-allowed opacity-40` : inactive}
+        disabled={currentPage === 1}
+        onClick={() => go(currentPage - 1)}
+      >
+        Prev
+      </button>
       {pages.map((p) => (
         <button
           key={p}
@@ -51,6 +59,18 @@ export default function ShopPagination({
         onClick={() => go(currentPage + 1)}
       >
         Next
+      </button>
+      <button
+        type="button"
+        className={
+          currentPage === totalPages
+            ? `${btnBase} cursor-not-allowed opacity-40`
+            : inactive
+        }
+        disabled={currentPage === totalPages}
+        onClick={() => go(totalPages)}
+      >
+        Last
       </button>
     </nav>
   )
