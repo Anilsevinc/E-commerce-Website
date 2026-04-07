@@ -1,5 +1,12 @@
 import { api } from '../../lib/api'
-import { setCategories, setFetchState, setProductList, setTotal } from './product.actions'
+import {
+  setCategories,
+  setFetchState,
+  setProductList,
+  setSelectedProduct,
+  setSelectedProductFetchState,
+  setTotal,
+} from './product.actions'
 
 export const fetchCategoriesIfNeeded = () => async (dispatch, getState) => {
   const { product } = getState()
@@ -37,4 +44,17 @@ export const fetchProducts =
       dispatch(setFetchState('FAILED'))
     }
   }
+
+export const fetchProductById = (productId) => async (dispatch) => {
+  if (!productId) return
+  dispatch(setSelectedProductFetchState('FETCHING'))
+  try {
+    const res = await api.get(`/products/${encodeURIComponent(String(productId))}`)
+    dispatch(setSelectedProduct(res.data || null))
+    dispatch(setSelectedProductFetchState('FETCHED'))
+  } catch {
+    dispatch(setSelectedProduct(null))
+    dispatch(setSelectedProductFetchState('FAILED'))
+  }
+}
 

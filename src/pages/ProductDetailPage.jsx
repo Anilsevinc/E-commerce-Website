@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,9 +11,6 @@ import {
 } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 
-import mainProductImage from '../assets/main-product-image.jpg'
-import carouselImage from '../assets/carousel-image.jpg'
-import carouselSecondImage from '../assets/carousel-second-image.jpg'
 import productsImage from '../assets/products-image.jpg'
 
 import hooli from '../assets/hooli-brands.png'
@@ -28,7 +26,7 @@ import stripeMobileLogo from '../assets/stripe-logo.png'
 import awsMobileLogo from '../assets/aws-logo.png'
 import redditMobileLogo from '../assets/reddit-logo.png'
 
-const galleryImages = [carouselImage, carouselSecondImage]
+import { fetchProductById } from '../store/product/product.thunks'
 
 const brands = [
   { id: 'hooli', src: hooli, mobileSrc: hooliMobileLogo, alt: 'Hooli' },
@@ -49,14 +47,39 @@ const bestsellerItems = Array.from({ length: 8 }, (_, i) => ({
 }))
 
 export default function ProductDetailPage() {
-  const { id } = useParams()
+  const { id, productId } = useParams()
+  const effectiveProductId = productId || id
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const product = useSelector((s) => s.product.selectedProduct)
+  const fetchState = useSelector((s) => s.product.selectedProductFetchState)
   const [activeImage, setActiveImage] = useState(0)
   const [activeTab, setActiveTab] = useState('description')
 
+  useEffect(() => {
+    if (!effectiveProductId) return
+    dispatch(fetchProductById(effectiveProductId))
+  }, [dispatch, effectiveProductId])
+
+  const galleryImages = useMemo(() => {
+    const imgs = Array.isArray(product?.images) ? product.images : []
+    return imgs
+      .slice()
+      .sort((a, b) => Number(a?.index || 0) - Number(b?.index || 0))
+      .map((x) => x.url)
+      .filter(Boolean)
+  }, [product])
+
   const nextImage = () =>
-    setActiveImage((i) => (i + 1) % galleryImages.length)
+    setActiveImage((i) => (galleryImages.length ? (i + 1) % galleryImages.length : 0))
   const prevImage = () =>
-    setActiveImage((i) => (i - 1 + galleryImages.length) % galleryImages.length)
+    setActiveImage((i) =>
+      galleryImages.length ? (i - 1 + galleryImages.length) % galleryImages.length : 0
+    )
+
+  useEffect(() => {
+    setActiveImage(0)
+  }, [effectiveProductId])
 
   return (
     <div className="flex w-full max-w-[1920px] flex-col bg-neutral-100">
@@ -79,36 +102,62 @@ export default function ProductDetailPage() {
             Shop
           </Link>
         </nav>
+        <div className="mt-4 flex justify-center lg:justify-start">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-900 transition-colors hover:border-brand hover:text-brand"
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden />
+            Back
+          </button>
+        </div>
       </div>
 
       <section className="w-full px-3 pb-10 md:px-8 lg:px-[11%] lg:pb-16">
+        {fetchState === 'FETCHING' ? (
+          <div className="flex w-full items-center justify-center py-20">
+            <div className="flex items-center gap-3 text-sm font-semibold text-muted">
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-brand/30 border-t-brand" />
+              Loading product...
+            </div>
+          </div>
+        ) : fetchState === 'FAILED' ? (
+          <div className="mx-auto w-full max-w-[1200px] rounded-xl border border-neutral-200 bg-white p-8 text-center text-sm font-semibold text-muted">
+            Product not found.
+          </div>
+        ) : (
         <div className="mx-auto flex max-w-[1200px] flex-col gap-10 lg:max-w-none lg:flex-row lg:items-start lg:gap-12 xl:gap-16">
           <div className="w-full shrink-0 lg:max-w-[50%] lg:flex-1">
             <div className="relative aspect-square w-full overflow-hidden bg-white">
               <img
-                src={galleryImages[activeImage]}
-                alt=""
+                src={galleryImages[activeImage] || galleryImages[0] || productsImage}
+                alt={product?.name || ''}
                 className="h-full w-full object-cover object-center"
               />
-              <button
-                type="button"
-                onClick={prevImage}
-                className="absolute left-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow transition hover:bg-white lg:left-4"
-                aria-label="Previous image"
-              >
-                <ChevronLeft className="h-6 w-6" strokeWidth={2} />
-              </button>
-              <button
-                type="button"
-                onClick={nextImage}
-                className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow transition hover:bg-white lg:right-4"
-                aria-label="Next image"
-              >
-                <ChevronRight className="h-6 w-6" strokeWidth={2} />
-              </button>
+              {galleryImages.length > 1 ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={prevImage}
+                    className="absolute left-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow transition hover:bg-white lg:left-4"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="h-6 w-6" strokeWidth={2} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextImage}
+                    className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-neutral-800 shadow transition hover:bg-white lg:right-4"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="h-6 w-6" strokeWidth={2} />
+                  </button>
+                </>
+              ) : null}
             </div>
             <div className="mt-4 flex justify-start gap-3">
-              {galleryImages.map((src, idx) => (
+              {(galleryImages.length ? galleryImages : [productsImage]).map((src, idx) => (
                 <button
                   key={src}
                   type="button"
@@ -122,7 +171,7 @@ export default function ProductDetailPage() {
                 >
                   <img
                     src={src}
-                    alt=""
+                    alt={product?.name || ''}
                     className="h-full w-full object-cover object-center"
                   />
                 </button>
@@ -132,29 +181,40 @@ export default function ProductDetailPage() {
 
           <div className="flex w-full flex-col gap-5 lg:max-w-[50%] lg:flex-1">
             <h1 className="text-2xl font-bold text-neutral-900 lg:text-3xl">
-              Floating Phone
+              {product?.name || 'Product'}
             </h1>
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-0.5" aria-label="5 out of 5 stars">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star
-                    key={s}
-                    className="h-5 w-5 fill-yellow-400 text-yellow-400"
-                    aria-hidden
-                  />
-                ))}
+              <div className="flex items-center gap-0.5" aria-label="Rating">
+                {Array.from({ length: 5 }, (_, i) => i + 1).map((s) => {
+                  const filled = Number(product?.rating || 0) >= s
+                  return (
+                    <Star
+                      key={s}
+                      className={
+                        filled
+                          ? 'h-5 w-5 fill-yellow-400 text-yellow-400'
+                          : 'h-5 w-5 text-neutral-300'
+                      }
+                      aria-hidden
+                    />
+                  )
+                })}
               </div>
-              <span className="text-sm font-semibold text-muted">10 Reviews</span>
+              <span className="text-sm font-semibold text-muted">
+                {Number(product?.rating || 0).toFixed(2)}
+              </span>
             </div>
-            <p className="text-2xl font-bold text-neutral-900">$1,139.33</p>
+            <p className="text-2xl font-bold text-neutral-900">
+              ${Number(product?.price || 0).toFixed(2)}
+            </p>
             <p className="text-sm font-semibold">
               <span className="text-muted">Availability : </span>
-              <span className="text-brand">In Stock</span>
+              <span className="text-brand">
+                {Number(product?.stock || 0) > 0 ? 'In Stock' : 'Out of Stock'}
+              </span>
             </p>
             <p className="max-w-xl text-sm leading-relaxed text-muted">
-              Met minim Mollie non desert Alamo est sit cliquey dolor do met sent.
-              RELIT official consequent door ENIM RELIT Mollie. Excitation venial
-              consequent sent nostrum met.
+              {product?.description || ''}
             </p>
             <hr className="border-neutral-200 lg:hidden" />
             <div className="flex flex-wrap items-center gap-3">
@@ -206,11 +266,12 @@ export default function ProductDetailPage() {
                 </button>
               </div>
             </div>
-            {id ? (
-              <p className="sr-only">Product id: {id}</p>
+            {effectiveProductId ? (
+              <p className="sr-only">Product id: {effectiveProductId}</p>
             ) : null}
           </div>
         </div>
+        )}
       </section>
 
       <section className="w-full border-t border-neutral-200 bg-white px-3 py-10 md:px-8 lg:px-[11%] lg:py-14">
@@ -245,64 +306,29 @@ export default function ProductDetailPage() {
           <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12">
             <div className="w-full shrink-0 overflow-hidden lg:max-w-[48%]">
               <img
-                src={mainProductImage}
-                alt=""
+                src={galleryImages[0] || productsImage}
+                alt={product?.name || ''}
                 className="h-auto w-full object-cover object-center"
               />
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-6">
               <h2 className="text-2xl font-bold leading-tight text-neutral-900">
-                the quick fox jumps over
+                Description
               </h2>
               <p className="text-sm leading-relaxed text-muted">
-                Met minim Mollie non desert Alamo est sit cliquey dolor do met sent.
-                RELIT official consequent door ENIM RELIT Mollie. Excitation venial
-                consequent sent nostrum met.
+                {product?.description || ''}
               </p>
-              <p className="text-sm leading-relaxed text-muted">
-                Met minim Mollie non desert Alamo est sit cliquey dolor do met sent.
-                RELIT official consequent door ENIM RELIT Mollie. Excitation venial
-                consequent sent nostrum met.
-              </p>
-              <p className="text-sm leading-relaxed text-muted">
-                Met minim Mollie non desert Alamo est sit cliquey dolor do met sent.
-                RELIT official consequent door ENIM RELIT Mollie. Excitation venial
-                consequent sent nostrum met.
-              </p>
-              <div className="grid gap-8 sm:grid-cols-2">
-                {[1, 2].map((col) => (
-                  <div key={col}>
-                    <h3 className="mb-4 text-base font-bold text-neutral-900">
-                      the quick fox jumps over
-                    </h3>
-                    <ul className="flex flex-col gap-3">
-                      {['the quick fox jumps', 'the quick fox jumps', 'the quick fox jumps'].map(
-                        (line) => (
-                          <li
-                            key={`${col}-${line}`}
-                            className="flex items-start gap-2 text-sm font-semibold text-muted"
-                          >
-                            <ChevronRight
-                              className="mt-0.5 h-4 w-4 shrink-0 text-muted"
-                              aria-hidden
-                            />
-                            <span>{line}</span>
-                          </li>
-                        ),
-                      )}
-                    </ul>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         ) : null}
 
         {activeTab === 'additional' ? (
-          <p className="max-w-3xl text-sm leading-relaxed text-muted">
-            Additional product information, dimensions, materials, and care
-            instructions will appear here.
-          </p>
+          <div className="max-w-3xl text-sm leading-relaxed text-muted">
+            <p>Category ID: {product?.category_id ?? '-'}</p>
+            <p>Store ID: {product?.store_id ?? '-'}</p>
+            <p>Stock: {product?.stock ?? '-'}</p>
+            <p>Sell count: {product?.sell_count ?? '-'}</p>
+          </div>
         ) : null}
 
         {activeTab === 'reviews' ? (

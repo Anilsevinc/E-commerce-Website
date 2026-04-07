@@ -26,3 +26,13 @@ export function categoryRoute({ gender, title, id }) {
   return `/shop/${genderSeg}/${nameSeg}/${encodeURIComponent(String(id))}`
 }
 
+export function productRoute({ category, product }) {
+  if (!category || !product) return ''
+  const genderSeg = genderPath(category.gender)
+  const categoryNameSeg = slugifyTR(category.title)
+  const productNameSeg = slugifyTR(product.name)
+  return `/shop/${genderSeg}/${categoryNameSeg}/${encodeURIComponent(
+    String(category.id)
+  )}/${productNameSeg}/${encodeURIComponent(String(product.id))}`
+}
+

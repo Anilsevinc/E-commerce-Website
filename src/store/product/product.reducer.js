@@ -5,6 +5,8 @@ import {
   SET_LIMIT,
   SET_OFFSET,
   SET_PRODUCT_LIST,
+  SET_SELECTED_PRODUCT,
+  SET_SELECTED_PRODUCT_FETCH_STATE,
   SET_TOTAL,
 } from './product.actions'
 
@@ -16,6 +18,8 @@ const initialState = {
   offset: 0,
   filter: '',
   fetchState: 'NOT_FETCHED',
+  selectedProduct: null,
+  selectedProductFetchState: 'NOT_FETCHED',
 }
 
 export default function productReducer(state = initialState, action) {
@@ -28,6 +32,10 @@ export default function productReducer(state = initialState, action) {
       return { ...state, total: action.payload }
     case SET_FETCH_STATE:
       return { ...state, fetchState: action.payload }
+    case SET_SELECTED_PRODUCT:
+      return { ...state, selectedProduct: action.payload }
+    case SET_SELECTED_PRODUCT_FETCH_STATE:
+      return { ...state, selectedProductFetchState: action.payload }
     case SET_LIMIT:
       return { ...state, limit: action.payload }
     case SET_OFFSET:

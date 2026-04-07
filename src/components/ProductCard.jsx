@@ -95,7 +95,7 @@ export default function ProductCard({
     return (
       <Link
         to={to}
-        className="block text-inherit no-underline outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+        className="block cursor-pointer text-inherit no-underline outline-none transition-all hover:-translate-y-0.5 hover:opacity-95 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
       >
         {article}
       </Link>

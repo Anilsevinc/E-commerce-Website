@@ -18,7 +18,7 @@ import stripeMobileLogo from '../assets/stripe-logo.png'
 import awsMobileLogo from '../assets/aws-logo.png'
 import redditMobileLogo from '../assets/reddit-logo.png'
 
-import { categoryRoute, genderPath, slugifyTR } from '../lib/category'
+import { categoryRoute, genderPath, productRoute, slugifyTR } from '../lib/category'
 import { fetchProducts } from '../store/product/product.thunks'
 
 const brands = [
@@ -59,6 +59,12 @@ export default function ShopPage() {
   }, [categories, selectedCategoryId])
 
   const totalPages = Math.max(1, Math.ceil((Number(total) || 0) / (Number(limit) || 25)))
+
+  const categoryById = useMemo(() => {
+    const m = new Map()
+    ;(Array.isArray(categories) ? categories : []).forEach((c) => m.set(String(c.id), c))
+    return m
+  }, [categories])
 
   useEffect(() => {
     setCurrentPage(1)
@@ -226,7 +232,12 @@ export default function ShopPage() {
             {productList.map((p) => (
               <ProductCard
                 key={p.id}
-                to={`/product/${encodeURIComponent(p.id)}`}
+                to={
+                  productRoute({
+                    category: categoryById.get(String(p.category_id)),
+                    product: p,
+                  }) || `/product/${encodeURIComponent(p.id)}`
+                }
                 image={p.images?.[0]?.url}
                 title={p.name}
                 subtitle={p.description}
@@ -241,7 +252,12 @@ export default function ShopPage() {
             {productList.map((p) => (
               <ProductCard
                 key={p.id}
-                to={`/product/${encodeURIComponent(p.id)}`}
+                to={
+                  productRoute({
+                    category: categoryById.get(String(p.category_id)),
+                    product: p,
+                  }) || `/product/${encodeURIComponent(p.id)}`
+                }
                 image={p.images?.[0]?.url}
                 title={p.name}
                 subtitle={p.description}
