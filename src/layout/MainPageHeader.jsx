@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -91,6 +91,8 @@ export default function MainPageHeader() {
   const dispatch = useDispatch()
   const [mobileTopOpen, setMobileTopOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const userMenuRef = useRef(null)
   const user = useSelector((s) => s.client.user)
   const isLoggedIn = Boolean(user?.token || user?.email)
   const location = useLocation()
@@ -117,6 +119,17 @@ export default function MainPageHeader() {
     await dispatch(logoutUser())
     navigate('/')
   }
+
+  useEffect(() => {
+    if (!userMenuOpen) return
+    function handlePointerDown(e) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handlePointerDown)
+    return () => document.removeEventListener('mousedown', handlePointerDown)
+  }, [userMenuOpen])
 
   return (
     <header className="sticky top-0 z-50 flex w-full flex-col bg-white shadow-sm">
@@ -314,16 +327,47 @@ export default function MainPageHeader() {
 
             <div className="hidden shrink-0 items-center gap-4 text-brand lg:ml-auto lg:flex">
               {isLoggedIn ? (
-                <div className="flex items-center gap-2 text-sm font-semibold text-brand-dark">
-                  <Gravatar email={user?.email} size={28} className="h-7 w-7" />
-                  <span>Hi, {user?.name || user?.email}</span>
+                <div className="relative z-[60]" ref={userMenuRef}>
                   <button
                     type="button"
-                    onClick={onLogout}
-                    className="ml-2 text-sm font-semibold text-brand hover:opacity-80"
+                    className="flex max-w-[220px] items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold text-brand-dark transition-colors hover:bg-neutral-50"
+                    aria-expanded={userMenuOpen}
+                    aria-haspopup="menu"
+                    onClick={() => setUserMenuOpen((o) => !o)}
                   >
-                    Logout
+                    <Gravatar email={user?.email} size={28} className="h-7 w-7 shrink-0" />
+                    <span className="min-w-0 truncate">Hi, {user?.name || user?.email}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 shrink-0 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}
+                      aria-hidden
+                    />
                   </button>
+                  {userMenuOpen ? (
+                    <div
+                      className="absolute right-0 top-full mt-2 min-w-[220px] rounded-xl border border-neutral-200 bg-white py-2 shadow-lg"
+                      role="menu"
+                    >
+                      <Link
+                        to="/orders"
+                        role="menuitem"
+                        className="block px-4 py-2.5 text-sm font-semibold text-brand-dark transition-colors hover:bg-neutral-50"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Previous orders
+                      </Link>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-brand transition-colors hover:bg-neutral-50"
+                        onClick={() => {
+                          setUserMenuOpen(false)
+                          onLogout()
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-sm font-semibold">

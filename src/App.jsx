@@ -10,7 +10,11 @@ import AboutPage from './pages/AboutPage'
 import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
 import ShoppingCartPage from './pages/ShoppingCartPage'
+import CreateOrderPage from './pages/CreateOrderPage'
+import OrderSuccessPage from './pages/OrderSuccessPage'
+import PreviousOrdersPage from './pages/PreviousOrdersPage'
 import PagePlaceholder from './pages/PagePlaceholder'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
   return (
@@ -34,6 +38,30 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
           <Route path="cart" element={<ShoppingCartPage />} />
+          <Route
+            path="order"
+            element={
+              <ProtectedRoute>
+                <CreateOrderPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="order/success"
+            element={
+              <ProtectedRoute>
+                <OrderSuccessPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="orders"
+            element={
+              <ProtectedRoute>
+                <PreviousOrdersPage />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>
