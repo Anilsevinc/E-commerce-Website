@@ -91,6 +91,7 @@ function PricingCard({
   currency = '$',
   period = 'Per Month',
   emphasized = false,
+  plan = 'free',
 }) {
   const frame = emphasized
     ? 'bg-brand-dark text-white border-brand-dark'
@@ -137,15 +138,15 @@ function PricingCard({
         </Feature>
       </ul>
 
-      <button
-        type="button"
+      <Link
+        to={`/signup?plan=${encodeURIComponent(plan)}`}
         className={[
           'mt-10 inline-flex min-h-[52px] w-full items-center justify-center rounded-md px-6 text-sm font-bold transition-opacity',
           buttonClass,
         ].join(' ')}
       >
         Try for free
-      </button>
+      </Link>
     </div>
   )
 }
@@ -224,7 +225,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="w-full py-12 lg:py-14">
+      <section className="w-full bg-[#FAFAFA] py-12 lg:py-14">
         <div className="mx-auto w-full max-w-[1440px] px-3 md:px-8 lg:px-[clamp(1rem,13.54vw,195px)]">
           <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
             <h2 className="text-2xl font-bold text-brand-dark md:text-3xl">
@@ -246,30 +247,33 @@ export default function PricingPage() {
             </div>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-0">
-            <div className="md:pr-0">
+          <div className="mt-10 flex flex-col gap-8 md:flex-row md:items-stretch md:gap-0">
+            <div className="min-w-0 md:flex-1 md:pr-0">
               <PricingCard
                 title="FREE"
                 subtitle="Organize across all apps by hand"
                 price={prices.free}
                 period={prices.period}
+                plan="free"
               />
             </div>
-            <div className="md:-mt-4 md:px-0">
+            <div className="min-w-0 md:-mt-4 md:flex-1 md:px-0">
               <PricingCard
                 title="STANDARD"
                 subtitle="Organize across all apps by hand"
                 price={prices.standard}
                 period={prices.period}
                 emphasized
+                plan="standard"
               />
             </div>
-            <div className="md:pl-0">
+            <div className="min-w-0 md:flex-1 md:pl-0">
               <PricingCard
                 title="PREMIUM"
                 subtitle="Organize across all apps by hand"
                 price={prices.premium}
                 period={prices.period}
+                plan="premium"
               />
             </div>
           </div>
@@ -309,9 +313,12 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-x-16 md:gap-y-12">
+          <div className="mt-12 flex flex-col gap-10 md:flex-row md:flex-wrap md:gap-x-16 md:gap-y-12">
             {faqItems.map((item, idx) => (
-              <div key={idx} className="flex items-start gap-4">
+              <div
+                key={idx}
+                className="flex w-full min-w-0 items-start gap-4 md:w-[calc(50%-2rem)]"
+              >
                 <ChevronRight
                   className="mt-0.5 h-7 w-7 shrink-0 text-brand"
                   strokeWidth={2.5}
@@ -342,12 +349,12 @@ export default function PricingPage() {
             RELIT official consequent.
           </p>
 
-          <button
-            type="button"
+          <Link
+            to="/signup?trial=14"
             className="mt-8 inline-flex min-h-[52px] min-w-[200px] items-center justify-center rounded-md bg-brand px-8 text-sm font-bold text-white transition-opacity hover:opacity-90"
           >
             Try it free now
-          </button>
+          </Link>
 
           <div className="mt-10 flex items-center justify-center gap-6 text-neutral-900">
             {trialSocials.map(({ href, label, Icon }) => (

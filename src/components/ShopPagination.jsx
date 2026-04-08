@@ -11,67 +11,83 @@ export default function ShopPagination({
   }
 
   const btnBase =
-    'inline-flex min-h-[44px] min-w-[44px] items-center justify-center px-3 text-sm font-semibold transition-colors'
+    'relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center px-3 text-sm font-semibold transition-colors focus:z-10'
 
-  const inactive = `${btnBase} border border-brand bg-white text-brand hover:bg-brand/5`
-  const active = `${btnBase} bg-brand text-white`
+  const variant = (kind, isDisabled) => {
+    if (isDisabled) {
+      return `${btnBase} cursor-not-allowed border border-brand bg-white text-brand opacity-40`
+    }
+    if (kind === 'active') {
+      return `${btnBase} border border-brand bg-brand text-white hover:opacity-95`
+    }
+    return `${btnBase} border border-brand bg-white text-brand hover:bg-brand/5`
+  }
+
+  const controls = [
+    {
+      key: 'first',
+      label: 'First',
+      kind: 'inactive',
+      disabled: currentPage === 1,
+      onClick: () => go(1),
+    },
+    {
+      key: 'prev',
+      label: 'Prev',
+      kind: 'inactive',
+      disabled: currentPage === 1,
+      onClick: () => go(currentPage - 1),
+    },
+    ...pages.map((p) => ({
+      key: `page-${p}`,
+      label: String(p),
+      kind: p === currentPage ? 'active' : 'inactive',
+      disabled: false,
+      onClick: () => go(p),
+      ariaCurrent: p === currentPage ? 'page' : undefined,
+    })),
+    {
+      key: 'next',
+      label: 'Next',
+      kind: 'inactive',
+      disabled: currentPage === totalPages,
+      onClick: () => go(currentPage + 1),
+    },
+    {
+      key: 'last',
+      label: 'Last',
+      kind: 'inactive',
+      disabled: currentPage === totalPages,
+      onClick: () => go(totalPages),
+    },
+  ]
 
   return (
     <nav
       className="flex w-full flex-wrap items-center justify-center gap-2 py-10"
       aria-label="Pagination"
     >
-      <button
-        type="button"
-        className={currentPage === 1 ? `${btnBase} cursor-not-allowed opacity-40` : inactive}
-        disabled={currentPage === 1}
-        onClick={() => go(1)}
-      >
-        First
-      </button>
-      <button
-        type="button"
-        className={currentPage === 1 ? `${btnBase} cursor-not-allowed opacity-40` : inactive}
-        disabled={currentPage === 1}
-        onClick={() => go(currentPage - 1)}
-      >
-        Prev
-      </button>
-      {pages.map((p) => (
-        <button
-          key={p}
-          type="button"
-          className={p === currentPage ? active : inactive}
-          onClick={() => go(p)}
-          aria-current={p === currentPage ? 'page' : undefined}
-        >
-          {p}
-        </button>
-      ))}
-      <button
-        type="button"
-        className={
-          currentPage === totalPages
-            ? `${btnBase} cursor-not-allowed opacity-40`
-            : inactive
-        }
-        disabled={currentPage === totalPages}
-        onClick={() => go(currentPage + 1)}
-      >
-        Next
-      </button>
-      <button
-        type="button"
-        className={
-          currentPage === totalPages
-            ? `${btnBase} cursor-not-allowed opacity-40`
-            : inactive
-        }
-        disabled={currentPage === totalPages}
-        onClick={() => go(totalPages)}
-      >
-        Last
-      </button>
+      <div className="inline-flex items-stretch">
+        {controls.map((c, idx) => {
+          const isFirst = idx === 0
+          const isLast = idx === controls.length - 1
+
+          return (
+            <button
+              key={c.key}
+              type="button"
+              className={`${variant(c.kind, c.disabled)} ${isFirst ? 'rounded-l-md' : '-ml-px'} ${
+                isLast ? 'rounded-r-md' : ''
+              }`}
+              disabled={c.disabled}
+              onClick={c.onClick}
+              aria-current={c.ariaCurrent}
+            >
+              {c.label}
+            </button>
+          )
+        })}
+      </div>
     </nav>
   )
 }

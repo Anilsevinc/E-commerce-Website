@@ -148,27 +148,37 @@ export default function AboutPage() {
 
       <section className="w-full pt-2 pb-12 lg:pt-6 lg:pb-16">
         <div className="mx-auto w-full max-w-[1440px] px-3 md:px-8 lg:px-[clamp(1rem,13.54vw,195px)]">
-          <div className="mt-8 grid grid-cols-1 gap-6 lg:mt-12 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:gap-y-4">
-            <p className="text-xs font-bold uppercase tracking-[0.2px] text-[#E74040] lg:col-start-1 lg:row-start-1">
-              PROBLEMS TRYING
-            </p>
+          <div className="mt-8 flex flex-col gap-6 lg:mt-12 lg:flex-row lg:gap-x-16">
+            <div className="flex min-w-0 flex-1 flex-col gap-4">
+              <p className="text-xs font-bold uppercase tracking-[0.2px] text-[#E74040]">
+                PROBLEMS TRYING
+              </p>
 
-            <h2 className="max-w-md text-2xl font-bold leading-snug text-brand-dark lg:col-start-1 lg:row-start-2">
-              Met minim Mollie non desert Alamo est sit cliquey dolor do met
-              sent.
-            </h2>
+              <h2 className="max-w-md text-2xl font-bold leading-snug text-brand-dark">
+                Met minim Mollie non desert Alamo est sit cliquey dolor do met
+                sent.
+              </h2>
+            </div>
 
-            <p className="text-sm font-medium leading-relaxed text-muted lg:col-start-2 lg:row-start-2">
+            <p className="min-w-0 flex-1 text-sm font-medium leading-relaxed text-muted lg:pt-10">
               Problems trying to resolve the conflict between the two major
               realms of Classical physics: Newtonian mechanics
             </p>
           </div>
 
-          <div className="mt-14 grid grid-cols-2 gap-y-10 lg:mt-16 lg:grid-cols-4">
-            <Stat value="15K" label="Happy Customers" />
-            <Stat value="150K" label="Monthly Visitors" />
-            <Stat value="15" label="Countries Worldwide" />
-            <Stat value="100+" label="Top Partners" />
+          <div className="mt-14 flex flex-wrap gap-y-10 lg:mt-16">
+            <div className="w-1/2 min-w-0 lg:w-1/4">
+              <Stat value="15K" label="Happy Customers" />
+            </div>
+            <div className="w-1/2 min-w-0 lg:w-1/4">
+              <Stat value="150K" label="Monthly Visitors" />
+            </div>
+            <div className="w-1/2 min-w-0 lg:w-1/4">
+              <Stat value="15" label="Countries Worldwide" />
+            </div>
+            <div className="w-1/2 min-w-0 lg:w-1/4">
+              <Stat value="100+" label="Top Partners" />
+            </div>
           </div>
         </div>
       </section>
@@ -206,18 +216,24 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-x-8 md:gap-y-14">
-            <TeamMemberCard
-              imageSrc={meetOurTeamImage}
-              name="Username"
-              role="Profession"
-            />
-            <TeamMemberCard imageSrc={anilImage} name="Anıl" role="Full Stack Developer" />
-            <TeamMemberCard
-              imageSrc={gokhanImage}
-              name="Gökhan Özdemir"
-              role="Project Manager"
-            />
+          <div className="mt-10 flex flex-col gap-10 md:flex-row md:flex-wrap md:gap-x-8 md:gap-y-14">
+            <div className="w-full min-w-0 md:w-[calc((100%-4rem)/3)]">
+              <TeamMemberCard
+                imageSrc={meetOurTeamImage}
+                name="Username"
+                role="Profession"
+              />
+            </div>
+            <div className="w-full min-w-0 md:w-[calc((100%-4rem)/3)]">
+              <TeamMemberCard imageSrc={anilImage} name="Anıl" role="Full Stack Developer" />
+            </div>
+            <div className="w-full min-w-0 md:w-[calc((100%-4rem)/3)]">
+              <TeamMemberCard
+                imageSrc={gokhanImage}
+                name="Gökhan Özdemir"
+                role="Project Manager"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -250,8 +266,8 @@ export default function AboutPage() {
 
       <section className="w-full">
         <div className="w-full">
-          <div className="grid w-full grid-cols-1 lg:h-[640px] lg:grid-cols-2">
-            <div className="flex h-full flex-col items-center justify-center bg-[#2A7CC7] px-6 py-12 text-center text-white md:px-10 lg:items-start lg:px-16 lg:py-0 lg:text-left">
+          <div className="flex w-full flex-col lg:h-[640px] lg:flex-row">
+            <div className="flex h-full min-w-0 flex-1 flex-col items-center justify-center bg-[#2A7CC7] px-6 py-12 text-center text-white md:px-10 lg:items-start lg:px-16 lg:py-0 lg:text-left">
               <p className="text-xs font-bold uppercase tracking-[0.2px] text-white/90">
                 WORK WITH US
               </p>
@@ -262,14 +278,14 @@ export default function AboutPage() {
                 The gradual accumulation of information about atomic and
                 small-scale behavior during the first quarter of the 20th
               </p>
-              <button
-                type="button"
+              <Link
+                to="/reservation"
                 className="mt-8 inline-flex min-h-[44px] w-fit items-center justify-center rounded-md border border-white/60 bg-transparent px-8 text-sm font-bold text-white transition-colors hover:bg-white/10 lg:mt-6"
               >
-                Button
-              </button>
+                Book Appointment
+              </Link>
             </div>
-            <div className="hidden overflow-hidden bg-neutral-100 lg:block lg:h-full">
+            <div className="hidden min-w-0 flex-1 overflow-hidden bg-neutral-100 lg:block lg:h-full">
               <img
                 src={aboutUsWorkImage}
                 alt=""

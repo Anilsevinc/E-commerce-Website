@@ -174,10 +174,16 @@ export default function ContactPage() {
             We help small businesses with big ideas
           </h2>
 
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3 md:items-stretch md:gap-5 lg:gap-8">
-            <OfficeCard icon={phoneIconAsset} variant="light" />
-            <OfficeCard icon={locationIconAsset} variant="dark" />
-            <OfficeCard icon={mailIconAsset} variant="light" />
+          <div className="mt-12 flex flex-col gap-6 md:flex-row md:items-stretch md:gap-5 lg:gap-8">
+            <div className="min-w-0 flex-1">
+              <OfficeCard icon={phoneIconAsset} variant="light" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <OfficeCard icon={locationIconAsset} variant="dark" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <OfficeCard icon={mailIconAsset} variant="light" />
+            </div>
           </div>
         </div>
       </section>

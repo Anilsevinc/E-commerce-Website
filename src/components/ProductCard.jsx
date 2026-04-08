@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Heart } from 'lucide-react'
+import { toggleWishlist } from '../store/wishlist/wishlist.actions'
 
 export default function ProductCard({
   image,
@@ -9,7 +12,23 @@ export default function ProductCard({
   showSwatches = false,
   listLayout = false,
   to,
+  wishlistProduct,
 }) {
+  const dispatch = useDispatch()
+  const inWishlist = useSelector((s) =>
+    wishlistProduct?.id != null
+      ? (Array.isArray(s.wishlist?.items) ? s.wishlist.items : []).some(
+          (p) => String(p?.id) === String(wishlistProduct.id)
+        )
+      : false
+  )
+
+  function onWishlistClick(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (wishlistProduct) dispatch(toggleWishlist(wishlistProduct))
+  }
+
   const imageBlock = (
     <div
       className={
@@ -26,6 +45,46 @@ export default function ProductCard({
         loading="lazy"
       />
     </div>
+  )
+
+  const imageWithWishlist = wishlistProduct ? (
+    <div
+      className={
+        listLayout
+          ? 'relative max-w-[140px] shrink-0 sm:max-w-[180px] lg:max-w-[220px]'
+          : 'relative w-full'
+      }
+    >
+      <div
+        className={
+          listLayout
+            ? 'aspect-[3/4] w-full overflow-hidden'
+            : 'aspect-[3/4] w-full overflow-hidden'
+        }
+      >
+        <img
+          key={image || 'no-image'}
+          src={image}
+          alt=""
+          className="h-full w-full object-cover object-center"
+          loading="lazy"
+        />
+      </div>
+      <button
+        type="button"
+        className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-neutral-700 shadow-sm transition-colors hover:bg-white hover:text-brand"
+        aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+        aria-pressed={inWishlist}
+        onClick={onWishlistClick}
+      >
+        <Heart
+          className={`h-5 w-5 ${inWishlist ? 'fill-brand text-brand' : ''}`}
+          strokeWidth={2}
+        />
+      </button>
+    </div>
+  ) : (
+    imageBlock
   )
 
   const textBlock = (
@@ -81,12 +140,12 @@ export default function ProductCard({
 
   const article = listLayout ? (
     <article className="flex w-full flex-row items-center gap-4 lg:min-h-0">
-      {imageBlock}
+      {imageWithWishlist}
       {textBlock}
     </article>
   ) : (
     <article className="flex w-full flex-col items-center gap-4 lg:min-h-0">
-      {imageBlock}
+      {imageWithWishlist}
       {textBlock}
     </article>
   )

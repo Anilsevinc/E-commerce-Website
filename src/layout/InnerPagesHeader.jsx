@@ -123,7 +123,7 @@ export default function InnerPagesHeader() {
                 </Link>
               )}
               <Link
-                to="/login"
+                to="/reservation"
                 className="inline-flex items-center justify-center gap-2 rounded-md bg-brand px-5 py-3 text-sm font-semibold text-white"
                 onClick={() => setMobileContactNavOpen(false)}
               >
@@ -187,7 +187,7 @@ export default function InnerPagesHeader() {
                 </>
               )}
               <Link
-                to="/login"
+                to="/reservation"
                 className="inline-flex h-[52px] shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 sm:px-5"
               >
                 Become a member

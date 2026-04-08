@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import Layout from './layout/Layout'
 import HomePage from './pages/HomePage'
 import ShopPage from './pages/ShopPage'
@@ -7,13 +7,14 @@ import ContactPage from './pages/ContactPage'
 import TeamPage from './pages/TeamPage'
 import PricingPage from './pages/PricingPage'
 import AboutPage from './pages/AboutPage'
+import ReservationPage from './pages/ReservationPage'
 import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
 import ShoppingCartPage from './pages/ShoppingCartPage'
 import CreateOrderPage from './pages/CreateOrderPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
 import PreviousOrdersPage from './pages/PreviousOrdersPage'
-import PagePlaceholder from './pages/PagePlaceholder'
+import BlogPage from './pages/BlogPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -30,10 +31,11 @@ function App() {
           />
           <Route path="product/:id" element={<ProductDetailPage />} />
           <Route path="about" element={<AboutPage />} />
-          <Route path="blog" element={<PagePlaceholder title="Blog" />} />
+          <Route path="reservation" element={<ReservationPage />} />
+          <Route path="blog" element={<BlogPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="team" element={<TeamPage />} />
-          <Route path="pages" element={<PagePlaceholder title="Pages" />} />
+          <Route path="pages" element={<Navigate to="/" replace />} />
           <Route path="pricing" element={<PricingPage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { LayoutGrid, List } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
@@ -32,6 +32,7 @@ const brands = [
 
 export default function ShopPage() {
   const dispatch = useDispatch()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [viewMode, setViewMode] = useState('grid')
   const [currentPage, setCurrentPage] = useState(1)
   const [sortDraft, setSortDraft] = useState('')
@@ -67,6 +68,10 @@ export default function ShopPage() {
   }, [categories])
 
   useEffect(() => {
+    setFilterText(searchParams.get('q') || '')
+  }, [searchParams])
+
+  useEffect(() => {
     setCurrentPage(1)
   }, [selectedCategoryId, sort, filterText])
 
@@ -86,7 +91,7 @@ export default function ShopPage() {
   return (
     <div className="flex w-full max-w-[1920px] flex-col">
       <section className="w-full bg-neutral-100">
-        <div className="mx-auto flex w-full max-w-[1920px] flex-col gap-4 px-3 py-8 md:flex-row md:items-center md:justify-between md:px-8 lg:px-[11%] lg:py-10">
+        <div className="mx-auto flex w-full max-w-[1920px] flex-col gap-4 bg-[#FAFAFA] px-3 py-8 md:flex-row md:items-center md:justify-between md:px-8 lg:px-[11%] lg:py-10">
           <div className="flex flex-col items-center gap-1 md:items-start">
             <h1 className="text-center text-2xl font-bold text-neutral-900 md:text-left md:text-3xl lg:text-4xl">
               Shop
@@ -116,13 +121,13 @@ export default function ShopPage() {
         </div>
       </section>
 
-      <section className="w-full px-3 py-8 md:px-8 lg:px-[11%] lg:py-10">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-4">
+      <section className="w-full bg-[#FAFAFA] px-3 py-8 md:px-8 lg:px-[11%] lg:py-10">
+        <div className="flex flex-wrap gap-4 lg:flex-nowrap">
           {top5Categories.map((c) => (
             <Link
               key={c.id}
               to={categoryRoute(c)}
-              className="group relative block aspect-[4/5] w-full max-w-full overflow-hidden sm:aspect-[3/4]"
+              className="group relative block aspect-[4/5] w-full max-w-full overflow-hidden sm:aspect-[3/4] sm:w-[calc(50%-8px)] lg:w-0 lg:min-w-0 lg:flex-1"
             >
               <img
                 src={c.img}
@@ -142,7 +147,7 @@ export default function ShopPage() {
         </div>
       </section>
 
-      <section className="w-full border-y border-neutral-200 bg-white px-3 py-6 md:px-8 lg:px-[11%]">
+      <section className="w-full bg-white px-3 py-6 md:px-8 lg:px-[11%]">
         <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-6 lg:max-w-none lg:flex-row lg:items-center lg:justify-between lg:gap-8">
           <p className="text-center text-sm font-semibold text-muted lg:text-left">
             Showing {(Array.isArray(productList) ? productList.length : 0)} of {total} results
@@ -203,7 +208,14 @@ export default function ShopPage() {
               <input
                 id="shop-filter"
                 value={filterText}
-                onChange={(e) => setFilterText(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setFilterText(v)
+                  const next = new URLSearchParams(searchParams)
+                  if (v.trim()) next.set('q', v)
+                  else next.delete('q')
+                  setSearchParams(next, { replace: true })
+                }}
                 placeholder="Filter (e.g. siyah)"
                 className="min-h-[44px] w-full rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-900 outline-none focus:border-brand sm:w-[220px]"
               />
@@ -228,23 +240,28 @@ export default function ShopPage() {
             </div>
           </div>
         ) : viewMode === 'grid' ? (
-          <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          <div className="flex w-full flex-wrap gap-8 lg:gap-6">
             {productList.map((p) => (
-              <ProductCard
+              <div
                 key={p.id}
-                to={
-                  productRoute({
-                    category: categoryById.get(String(p.category_id)),
-                    product: p,
-                  }) || `/product/${encodeURIComponent(p.id)}`
-                }
-                image={p.images?.[0]?.url}
-                title={p.name}
-                subtitle={p.description}
-                oldPrice=""
-                newPrice={`$${Number(p.price || 0).toFixed(2)}`}
-                showSwatches
-              />
+                className="w-full min-w-0 sm:w-[calc(50%-16px)] lg:w-[calc(25%-18px)]"
+              >
+                <ProductCard
+                  to={
+                    productRoute({
+                      category: categoryById.get(String(p.category_id)),
+                      product: p,
+                    }) || `/product/${encodeURIComponent(p.id)}`
+                  }
+                  image={p.images?.[0]?.url}
+                  title={p.name}
+                  subtitle={p.description}
+                  oldPrice=""
+                  newPrice={`$${Number(p.price || 0).toFixed(2)}`}
+                  showSwatches
+                  wishlistProduct={p}
+                />
+              </div>
             ))}
           </div>
         ) : (
@@ -265,6 +282,7 @@ export default function ShopPage() {
                 newPrice={`$${Number(p.price || 0).toFixed(2)}`}
                 showSwatches
                 listLayout
+                wishlistProduct={p}
               />
             ))}
           </div>
@@ -279,7 +297,7 @@ export default function ShopPage() {
         />
       </div>
 
-      <section className="flex w-full flex-col items-center bg-neutral-50 px-3 py-10 md:px-8 lg:px-[11%] lg:py-12">
+      <section className="flex w-full flex-col items-center bg-[#FAFAFA] px-3 py-10 md:px-8 lg:px-[11%] lg:py-12">
         <div className="flex w-full max-w-[414px] flex-col items-center justify-start gap-y-10 opacity-100 grayscale md:h-auto md:max-w-[1440px] md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-10 lg:max-w-[1440px]">
           {brands.map((b) => (
             <picture key={b.id} className="block">

@@ -108,8 +108,8 @@ export default function TeamPage() {
             </nav>
           </div>
 
-          <div className="mt-10 grid grid-cols-2 gap-3 md:mt-12 lg:grid-cols-2 lg:gap-6">
-            <div className="col-span-2 overflow-hidden bg-neutral-100 lg:col-span-1">
+          <div className="mt-10 flex flex-col gap-3 md:mt-12 lg:flex-row lg:gap-6">
+            <div className="w-full min-w-0 overflow-hidden bg-neutral-100 lg:flex-1">
               <img
                 src={team1}
                 alt=""
@@ -118,9 +118,12 @@ export default function TeamPage() {
               />
             </div>
 
-            <div className="col-span-2 grid grid-cols-2 gap-3 lg:col-span-1 lg:gap-6">
+            <div className="flex w-full min-w-0 flex-wrap gap-3 lg:flex-1 lg:gap-6">
               {[team2, team3, team4, team5].map((src) => (
-                <div key={src} className="overflow-hidden bg-neutral-100">
+                <div
+                  key={src}
+                  className="w-[calc(50%-6px)] min-w-0 overflow-hidden bg-neutral-100 lg:w-[calc(50%-12px)]"
+                >
                   <img
                     src={src}
                     alt=""
@@ -140,15 +143,19 @@ export default function TeamPage() {
             Meet Our Team
           </h2>
 
-          <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-x-8 md:gap-y-14">
+          <div className="mt-10 flex flex-col gap-10 md:flex-row md:flex-wrap md:gap-x-8 md:gap-y-14">
             {members.map((member) => (
-              <TeamMemberCard
+              <div
                 key={`${member.name}-${member.role}`}
-                imageSrc={member.imageSrc}
-                name={member.name}
-                role={member.role}
-                linkedinUrl={member.linkedinUrl}
-              />
+                className="w-full min-w-0 md:w-[calc((100%-4rem)/3)]"
+              >
+                <TeamMemberCard
+                  imageSrc={member.imageSrc}
+                  name={member.name}
+                  role={member.role}
+                  linkedinUrl={member.linkedinUrl}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -164,12 +171,12 @@ export default function TeamPage() {
             RELIT official consequent.
           </p>
 
-          <button
-            type="button"
+          <Link
+            to="/signup?trial=14"
             className="mt-8 inline-flex min-h-[52px] min-w-[200px] items-center justify-center rounded-md bg-brand px-8 text-sm font-bold text-white transition-opacity hover:opacity-90"
           >
             Try it free now
-          </button>
+          </Link>
 
           <div className="mt-10 flex items-center justify-center gap-6 text-neutral-900">
             {trialSocials.map(({ href, label, Icon }) => (

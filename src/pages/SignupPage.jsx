@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -21,12 +21,17 @@ function FieldError({ message }) {
 export default function SignupPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const planFromUrl = searchParams.get('plan') || ''
+  const trialFromUrl = searchParams.get('trial') || ''
   const [rolesLoading, setRolesLoading] = useState(true)
   const [rolesError, setRolesError] = useState('')
   const [submitError, setSubmitError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const dispatch = useDispatch()
   const roles = useSelector((s) => s.client.roles)
+  const user = useSelector((s) => s.client.user)
+  const isLoggedIn = Boolean(user?.token || user?.email)
 
   const defaultRoleId = useMemo(() => {
     const customer = roles.find(
@@ -103,6 +108,12 @@ export default function SignupPage() {
     }
   }, [isStoreRole, resetField])
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/', { replace: true })
+    }
+  }, [isLoggedIn, navigate])
+
   async function onSubmit(values) {
     setSubmitError('')
     setIsSubmitting(true)
@@ -154,6 +165,10 @@ export default function SignupPage() {
     }
   }
 
+  if (isLoggedIn) {
+    return null
+  }
+
   return (
     <div className="w-full bg-white">
       <section className="mx-auto w-full max-w-[1440px] px-3 py-10 md:px-8 lg:px-[clamp(1rem,13.54vw,195px)] lg:py-14">
@@ -162,6 +177,17 @@ export default function SignupPage() {
           <p className="mt-2 text-sm font-medium text-muted">
             Sign up to get started.
           </p>
+          {planFromUrl ? (
+            <p className="mt-3 rounded-lg bg-brand/10 px-3 py-2 text-sm font-semibold text-brand-dark">
+              Selected plan:{' '}
+              <span className="uppercase">{planFromUrl}</span>
+            </p>
+          ) : null}
+          {trialFromUrl ? (
+            <p className="mt-3 rounded-lg bg-brand/10 px-3 py-2 text-sm font-semibold text-brand-dark">
+              {trialFromUrl}-day free trial signup
+            </p>
+          ) : null}
 
           {rolesError ? (
             <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">

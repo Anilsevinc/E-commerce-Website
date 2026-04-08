@@ -520,8 +520,8 @@ export default function CreateOrderPage() {
         ) : null}
 
         {step === 1 ? (
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-neutral-200 p-5">
+        <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start">
+          <div className="min-w-0 flex-1 rounded-2xl border border-neutral-200 p-5">
             <p className="text-base font-bold text-brand-dark">Shipping Address</p>
             <div className="mt-4 space-y-3">
               {(Array.isArray(addressList) ? addressList : []).map((a) => (
@@ -581,7 +581,7 @@ export default function CreateOrderPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-neutral-200 p-5">
+          <div className="min-w-0 flex-1 rounded-2xl border border-neutral-200 p-5">
             <p className="text-base font-bold text-brand-dark">Receipt Address</p>
             <div className="mt-4 space-y-3">
               {(Array.isArray(addressList) ? addressList : []).map((a) => (
@@ -716,10 +716,10 @@ export default function CreateOrderPage() {
                 </div>
 
                 <form
-                  className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2"
+                  className="mt-6 flex flex-col gap-5 md:flex-row md:flex-wrap"
                   onSubmit={handleSubmitCard(onSubmitCard)}
                 >
-                  <div className="md:col-span-2">
+                  <div className="w-full">
                     <label className="text-sm font-semibold text-brand-dark" htmlFor="card_no">
                       Card number
                     </label>
@@ -734,7 +734,7 @@ export default function CreateOrderPage() {
                     <FieldError message={cardErrors.card_no?.message} />
                   </div>
 
-                  <div>
+                  <div className="w-full min-w-0 md:w-[calc(50%-10px)]">
                     <label className="text-sm font-semibold text-brand-dark" htmlFor="expire_month">
                       Expiry month
                     </label>
@@ -748,7 +748,7 @@ export default function CreateOrderPage() {
                     <FieldError message={cardErrors.expire_month?.message} />
                   </div>
 
-                  <div>
+                  <div className="w-full min-w-0 md:w-[calc(50%-10px)]">
                     <label className="text-sm font-semibold text-brand-dark" htmlFor="expire_year">
                       Expiry year
                     </label>
@@ -763,7 +763,7 @@ export default function CreateOrderPage() {
                     <FieldError message={cardErrors.expire_year?.message} />
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="w-full">
                     <label className="text-sm font-semibold text-brand-dark" htmlFor="name_on_card">
                       Name on card
                     </label>
@@ -776,7 +776,7 @@ export default function CreateOrderPage() {
                     <FieldError message={cardErrors.name_on_card?.message} />
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="w-full">
                     <button
                       type="submit"
                       disabled={isCardSubmitting}
@@ -874,8 +874,11 @@ export default function CreateOrderPage() {
               </button>
             </div>
 
-            <form className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
-              <div className="md:col-span-2">
+            <form
+              className="mt-6 flex flex-col gap-5 md:flex-row md:flex-wrap"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div className="w-full">
                 <label className="text-sm font-semibold text-brand-dark" htmlFor="title">
                   Address Title
                 </label>
@@ -887,7 +890,7 @@ export default function CreateOrderPage() {
                 <FieldError message={errors.title?.message} />
               </div>
 
-              <div>
+              <div className="w-full min-w-0 md:w-[calc(50%-10px)]">
                 <label className="text-sm font-semibold text-brand-dark" htmlFor="name">
                   Name
                 </label>
@@ -899,7 +902,7 @@ export default function CreateOrderPage() {
                 <FieldError message={errors.name?.message} />
               </div>
 
-              <div>
+              <div className="w-full min-w-0 md:w-[calc(50%-10px)]">
                 <label className="text-sm font-semibold text-brand-dark" htmlFor="surname">
                   Surname
                 </label>
@@ -911,7 +914,7 @@ export default function CreateOrderPage() {
                 <FieldError message={errors.surname?.message} />
               </div>
 
-              <div>
+              <div className="w-full min-w-0 md:w-[calc(50%-10px)]">
                 <label className="text-sm font-semibold text-brand-dark" htmlFor="phone">
                   Phone
                 </label>
@@ -923,7 +926,7 @@ export default function CreateOrderPage() {
                 <FieldError message={errors.phone?.message} />
               </div>
 
-              <div>
+              <div className="w-full min-w-0 md:w-[calc(50%-10px)]">
                 <label className="text-sm font-semibold text-brand-dark" htmlFor="city">
                   City (İl)
                 </label>
@@ -942,7 +945,7 @@ export default function CreateOrderPage() {
                 <FieldError message={errors.city?.message} />
               </div>
 
-              <div>
+              <div className="w-full min-w-0 md:w-[calc(50%-10px)]">
                 <label className="text-sm font-semibold text-brand-dark" htmlFor="district">
                   District (İlçe)
                 </label>
@@ -954,7 +957,7 @@ export default function CreateOrderPage() {
                 <FieldError message={errors.district?.message} />
               </div>
 
-              <div>
+              <div className="w-full min-w-0 md:w-[calc(50%-10px)]">
                 <label className="text-sm font-semibold text-brand-dark" htmlFor="neighborhood">
                   Neighborhood (Mahalle)
                 </label>
@@ -966,7 +969,7 @@ export default function CreateOrderPage() {
                 <FieldError message={errors.neighborhood?.message} />
               </div>
 
-              <div className="md:col-span-2">
+              <div className="w-full">
                 <label className="text-sm font-semibold text-brand-dark" htmlFor="address">
                   Address
                 </label>
@@ -979,7 +982,7 @@ export default function CreateOrderPage() {
                 <FieldError message={errors.address?.message} />
               </div>
 
-              <div className="md:col-span-2">
+              <div className="w-full">
                 <button
                   type="submit"
                   disabled={isSubmitting}

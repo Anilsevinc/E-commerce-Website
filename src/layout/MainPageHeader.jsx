@@ -19,7 +19,9 @@ import {
 import MenuBarsRightIcon from '../components/icons/MenuBarsRightIcon'
 import Gravatar from '../components/Gravatar'
 import { logoutUser } from '../store/client/client.thunks'
-import { categoryRoute, genderPath } from '../lib/category'
+import { removeFromWishlist } from '../store/wishlist/wishlist.actions'
+import { categoryRoute, genderPath, productRoute } from '../lib/category'
+import { isPathUnderPagesMenu, PAGES_NAV_LINKS } from '../lib/pagesNavLinks'
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -91,6 +93,9 @@ export default function MainPageHeader() {
   const dispatch = useDispatch()
   const [mobileTopOpen, setMobileTopOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  const [wishlistOpen, setWishlistOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const userMenuRef = useRef(null)
   const user = useSelector((s) => s.client.user)
@@ -98,12 +103,24 @@ export default function MainPageHeader() {
   const location = useLocation()
   const navigate = useNavigate()
   const from = location.pathname + location.search
+  const pagesMenuActive = isPathUnderPagesMenu(location.pathname)
   const categories = useSelector((s) => s.product.categories)
   const cart = useSelector((s) => s.shoppingCart.cart)
   const cartCount = useMemo(
     () => (Array.isArray(cart) ? cart.reduce((sum, ci) => sum + Number(ci?.count || 0), 0) : 0),
     [cart]
   )
+  const wishlistItems = useSelector((s) =>
+    Array.isArray(s.wishlist?.items) ? s.wishlist.items : []
+  )
+  const wishlistCount = wishlistItems.length
+
+  const categoryById = useMemo(() => {
+    const m = new Map()
+    const list = Array.isArray(categories) ? categories : []
+    list.forEach((c) => m.set(String(c.id), c))
+    return m
+  }, [categories])
 
   const groupedCategories = useMemo(() => {
     const list = Array.isArray(categories) ? categories : []
@@ -118,6 +135,14 @@ export default function MainPageHeader() {
   async function onLogout() {
     await dispatch(logoutUser())
     navigate('/')
+  }
+
+  function onSubmitSearch(e) {
+    e.preventDefault()
+    const q = searchQuery.trim()
+    navigate(q ? `/shop?q=${encodeURIComponent(q)}` : '/shop')
+    setSearchOpen(false)
+    setSearchQuery('')
   }
 
   useEffect(() => {
@@ -206,15 +231,44 @@ export default function MainPageHeader() {
                 type="button"
                 className="flex h-11 w-11 items-center justify-center rounded-md text-neutral-900 transition-colors hover:text-neutral-700"
                 aria-label="Search"
+                aria-expanded={searchOpen}
+                onClick={() => {
+                  setSearchOpen((o) => !o)
+                  setWishlistOpen(false)
+                  setCartOpen(false)
+                }}
               >
                 <Search className="h-6 w-6" strokeWidth={2} />
               </button>
-              <button
-                type="button"
-                className="flex h-11 w-11 items-center justify-center rounded-md text-neutral-900 transition-colors hover:text-neutral-700"
+              <Link
+                to="/cart"
+                className="relative flex h-11 w-11 items-center justify-center rounded-md text-neutral-900 transition-colors hover:text-neutral-700"
                 aria-label="Cart"
               >
                 <ShoppingCart className="h-6 w-6" strokeWidth={2} />
+                {cartCount > 0 ? (
+                  <span className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-xs font-bold text-white">
+                    {cartCount}
+                  </span>
+                ) : null}
+              </Link>
+              <button
+                type="button"
+                className="relative flex h-11 w-11 items-center justify-center rounded-md text-neutral-900 transition-colors hover:text-neutral-700"
+                aria-label="Wishlist"
+                aria-expanded={wishlistOpen}
+                onClick={() => {
+                  setWishlistOpen((o) => !o)
+                  setSearchOpen(false)
+                  setCartOpen(false)
+                }}
+              >
+                <Heart className="h-6 w-6" strokeWidth={2} />
+                {wishlistCount > 0 ? (
+                  <span className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-xs font-bold text-white">
+                    {wishlistCount}
+                  </span>
+                ) : null}
               </button>
               <button
                 type="button"
@@ -236,6 +290,85 @@ export default function MainPageHeader() {
               </button>
             </div>
           </div>
+          {searchOpen ? (
+            <form
+              onSubmit={onSubmitSearch}
+              className="mt-3 flex w-full flex-col gap-2 px-1 sm:flex-row sm:items-center"
+            >
+              <label htmlFor="header-search-mobile" className="sr-only">
+                Search products
+              </label>
+              <input
+                id="header-search-mobile"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products..."
+                className="min-h-[44px] w-full flex-1 rounded-md border border-neutral-300 px-3 text-sm font-semibold text-neutral-900 outline-none focus:border-brand"
+              />
+              <button
+                type="submit"
+                className="min-h-[44px] shrink-0 rounded-md bg-brand px-4 text-sm font-bold text-white"
+              >
+                Search
+              </button>
+            </form>
+          ) : null}
+          {wishlistOpen ? (
+            <div className="mt-3 max-h-[280px] overflow-auto rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+              <p className="text-sm font-bold text-brand-dark">Wishlist</p>
+              {wishlistCount === 0 ? (
+                <p className="mt-3 text-sm font-semibold text-muted">
+                  No saved products yet.
+                </p>
+              ) : (
+                <div className="mt-3 flex flex-col gap-3">
+                  {wishlistItems.map((p) => {
+                    const to =
+                      productRoute({
+                        category: categoryById.get(String(p.category_id)),
+                        product: p,
+                      }) || `/product/${encodeURIComponent(p.id)}`
+                    return (
+                      <div
+                        key={p.id}
+                        className="flex items-center gap-3 border-b border-neutral-100 pb-3 last:border-b-0 last:pb-0"
+                      >
+                        <Link
+                          to={to}
+                          className="flex min-w-0 flex-1 items-center gap-3"
+                          onClick={() => setWishlistOpen(false)}
+                        >
+                          <div className="h-12 w-12 shrink-0 overflow-hidden rounded bg-neutral-100">
+                            <img
+                              src={p.images?.[0]?.url || ''}
+                              alt={p.name || ''}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-bold text-brand-dark">
+                              {p.name}
+                            </p>
+                            <p className="text-xs font-semibold text-muted">
+                              ${Number(p.price || 0).toFixed(2)}
+                            </p>
+                          </div>
+                        </Link>
+                        <button
+                          type="button"
+                          className="shrink-0 text-xs font-semibold text-muted hover:text-brand"
+                          onClick={() => dispatch(removeFromWishlist(p.id))}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          ) : null}
           <div
             id="mobile-top-bar"
             aria-hidden={!mobileTopOpen}
@@ -268,10 +401,10 @@ export default function MainPageHeader() {
                   </span>
                 </NavLink>
 
-                <div className="pointer-events-none absolute left-1/2 top-full z-50 hidden w-[560px] -translate-x-1/2 pt-4 group-hover:block">
-                  <div className="pointer-events-auto rounded-xl border border-neutral-200 bg-white p-6 shadow-lg">
-                    <div className="grid grid-cols-2 gap-8">
-                      <div>
+                <div className="absolute left-1/2 top-full z-50 hidden w-[560px] -translate-x-1/2 pt-3 group-hover:block">
+                  <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-lg">
+                    <div className="flex gap-8">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm font-bold text-brand-dark">Kadin</p>
                         <div className="mt-4 flex flex-col gap-3">
                           {groupedCategories.kadin.map((c) => (
@@ -285,7 +418,7 @@ export default function MainPageHeader() {
                           ))}
                         </div>
                       </div>
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm font-bold text-brand-dark">Erkek</p>
                         <div className="mt-4 flex flex-col gap-3">
                           {groupedCategories.erkek.map((c) => (
@@ -320,12 +453,36 @@ export default function MainPageHeader() {
               <NavLink to="/contact" className={navLinkClass}>
                 Contact
               </NavLink>
-              <NavLink to="/pages" className={navLinkClass}>
-                Pages
-              </NavLink>
+              <div className="relative group">
+                <span
+                  className={`inline-flex cursor-default items-center gap-1 text-sm font-semibold transition-colors ${
+                    pagesMenuActive
+                      ? 'text-brand'
+                      : 'text-brand-dark group-hover:text-brand'
+                  }`}
+                >
+                  Pages
+                  <ChevronDown className="h-4 w-4" aria-hidden />
+                </span>
+                <div className="absolute left-1/2 top-full z-50 hidden w-[280px] -translate-x-1/2 pt-3 group-hover:block">
+                  <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-lg">
+                    <nav aria-label="Pages" className="flex flex-col gap-3">
+                      {PAGES_NAV_LINKS.map(({ to, label }) => (
+                        <Link
+                          key={to}
+                          to={to}
+                          className="text-sm font-semibold text-muted transition-colors hover:text-brand"
+                        >
+                          {label}
+                        </Link>
+                      ))}
+                    </nav>
+                  </div>
+                </div>
+              </div>
             </nav>
 
-            <div className="hidden shrink-0 items-center gap-4 text-brand lg:ml-auto lg:flex">
+            <div className="relative hidden shrink-0 items-center gap-4 text-brand lg:ml-auto lg:flex">
               {isLoggedIn ? (
                 <div className="relative z-[60]" ref={userMenuRef}>
                   <button
@@ -385,19 +542,53 @@ export default function MainPageHeader() {
                   <Link to="/signup">Register</Link>
                 </div>
               )}
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-md"
-                aria-label="Search"
-              >
-                <Search className="h-5 w-5" />
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  className="flex h-10 w-10 items-center justify-center rounded-md"
+                  aria-label="Search"
+                  aria-expanded={searchOpen}
+                  onClick={() => {
+                    setSearchOpen((o) => !o)
+                    setCartOpen(false)
+                    setWishlistOpen(false)
+                  }}
+                >
+                  <Search className="h-5 w-5" />
+                </button>
+                {searchOpen ? (
+                  <div className="absolute right-0 top-full z-[60] mt-2 w-[min(100vw-2rem,320px)] rounded-xl border border-neutral-200 bg-white p-4 shadow-lg">
+                    <form onSubmit={onSubmitSearch} className="flex flex-col gap-3">
+                      <label htmlFor="header-search-desktop" className="sr-only">
+                        Search products
+                      </label>
+                      <input
+                        id="header-search-desktop"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search products..."
+                        className="min-h-[44px] w-full rounded-md border border-neutral-300 px-3 text-sm font-semibold text-neutral-900 outline-none focus:border-brand"
+                      />
+                      <button
+                        type="submit"
+                        className="min-h-[44px] rounded-md bg-brand text-sm font-bold text-white transition-opacity hover:opacity-90"
+                      >
+                        Search
+                      </button>
+                    </form>
+                  </div>
+                ) : null}
+              </div>
               <button
                 type="button"
                 className="flex h-10 w-10 items-center justify-center rounded-md"
                 aria-label="Cart"
                 aria-expanded={cartOpen}
-                onClick={() => setCartOpen((o) => !o)}
+                onClick={() => {
+                  setCartOpen((o) => !o)
+                  setWishlistOpen(false)
+                  setSearchOpen(false)
+                }}
               >
                 <span className="relative">
                   <ShoppingCart className="h-5 w-5" />
@@ -409,7 +600,7 @@ export default function MainPageHeader() {
                 </span>
               </button>
               {cartOpen ? (
-                <div className="absolute right-0 top-full z-50 mt-3 w-[320px] rounded-xl border border-neutral-200 bg-white p-4 shadow-lg">
+                <div className="absolute right-0 top-full z-[55] mt-3 w-[320px] rounded-xl border border-neutral-200 bg-white p-4 shadow-lg">
                   <p className="text-sm font-bold text-brand-dark">Cart</p>
                   {cartCount === 0 ? (
                     <p className="mt-3 text-sm font-semibold text-muted">
@@ -456,13 +647,82 @@ export default function MainPageHeader() {
                   ) : null}
                 </div>
               ) : null}
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-md"
-                aria-label="Wishlist"
-              >
-                <Heart className="h-5 w-5" />
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-md"
+                  aria-label="Wishlist"
+                  aria-expanded={wishlistOpen}
+                  onClick={() => {
+                    setWishlistOpen((o) => !o)
+                    setCartOpen(false)
+                    setSearchOpen(false)
+                  }}
+                >
+                  <Heart className="h-5 w-5" />
+                  {wishlistCount > 0 ? (
+                    <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-xs font-bold text-white">
+                      {wishlistCount}
+                    </span>
+                  ) : null}
+                </button>
+                {wishlistOpen ? (
+                  <div className="absolute right-0 top-full z-[60] mt-2 w-[min(100vw-2rem,320px)] rounded-xl border border-neutral-200 bg-white p-4 shadow-lg">
+                    <p className="text-sm font-bold text-brand-dark">Wishlist</p>
+                    {wishlistCount === 0 ? (
+                      <p className="mt-3 text-sm font-semibold text-muted">
+                        No saved products yet.
+                      </p>
+                    ) : (
+                      <div className="mt-3 flex max-h-[280px] flex-col gap-3 overflow-auto">
+                        {wishlistItems.map((p) => {
+                          const to =
+                            productRoute({
+                              category: categoryById.get(String(p.category_id)),
+                              product: p,
+                            }) || `/product/${encodeURIComponent(p.id)}`
+                          return (
+                            <div
+                              key={p.id}
+                              className="flex items-center gap-3 border-b border-neutral-100 pb-3 last:border-b-0 last:pb-0"
+                            >
+                              <Link
+                                to={to}
+                                className="flex min-w-0 flex-1 items-center gap-3"
+                                onClick={() => setWishlistOpen(false)}
+                              >
+                                <div className="h-12 w-12 shrink-0 overflow-hidden rounded bg-neutral-100">
+                                  <img
+                                    src={p.images?.[0]?.url || ''}
+                                    alt={p.name || ''}
+                                    className="h-full w-full object-cover"
+                                    loading="lazy"
+                                  />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-sm font-bold text-brand-dark">
+                                    {p.name}
+                                  </p>
+                                  <p className="text-xs font-semibold text-muted">
+                                    ${Number(p.price || 0).toFixed(2)}
+                                  </p>
+                                </div>
+                              </Link>
+                              <button
+                                type="button"
+                                className="shrink-0 text-xs font-semibold text-muted hover:text-brand"
+                                onClick={() => dispatch(removeFromWishlist(p.id))}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>

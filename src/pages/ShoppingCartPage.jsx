@@ -10,6 +10,12 @@ import {
   toggleCartItem,
 } from '../store/shoppingCart/shoppingCart.actions'
 
+/** Header + row: flex so columns stay aligned (fixed widths + flex-1 product). */
+const CART_TABLE_ROW =
+  'flex flex-col gap-4 px-4 py-4 md:flex-row md:flex-nowrap md:items-center md:gap-3'
+const CART_TABLE_HEADER =
+  'hidden flex-col gap-4 px-4 py-3 md:flex md:flex-row md:flex-nowrap md:items-center md:gap-3'
+
 export default function ShoppingCartPage() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -46,19 +52,23 @@ export default function ShoppingCartPage() {
           </nav>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-          <div className="overflow-hidden rounded-2xl border border-neutral-200">
-            <div className="hidden grid-cols-[48px_1fr_120px_160px_140px_64px] gap-4 bg-neutral-50 px-4 py-3 text-xs font-bold uppercase tracking-wide text-muted md:grid">
-              <span>Select</span>
-              <span>Product</span>
-              <span className="text-right">Price</span>
-              <span className="text-center">Quantity</span>
-              <span className="text-right">Subtotal</span>
-              <span className="text-right">Remove</span>
-            </div>
+        <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start">
+          <div className="min-w-0 flex-1 overflow-hidden rounded-2xl border border-neutral-200">
+            <div className="overflow-x-auto">
+              <div className="w-full min-w-0">
+                <div
+                  className={`${CART_TABLE_HEADER} bg-neutral-50 text-xs font-bold uppercase tracking-wide text-muted`}
+                >
+                  <span className="w-12 shrink-0 md:w-12">Select</span>
+                  <span className="min-w-0 flex-1">Product</span>
+                  <span className="w-[100px] shrink-0 text-right">Price</span>
+                  <span className="w-[152px] shrink-0 text-center">Quantity</span>
+                  <span className="w-[100px] shrink-0 text-right">Subtotal</span>
+                  <span className="w-[52px] shrink-0 text-right">Remove</span>
+                </div>
 
-            <div className="divide-y divide-neutral-200">
-              {Array.isArray(cart) && cart.length > 0 ? (
+                <div className="divide-y divide-neutral-200">
+                  {Array.isArray(cart) && cart.length > 0 ? (
                 cart.map((ci) => {
                   const p = ci.product || {}
                   const price = Number(p.price || 0)
@@ -66,11 +76,8 @@ export default function ShoppingCartPage() {
                   const subtotal = price * count
 
                   return (
-                    <div
-                      key={p.id}
-                      className="grid grid-cols-1 gap-4 px-4 py-4 md:grid-cols-[48px_1fr_120px_160px_140px_64px] md:items-center"
-                    >
-                      <div className="flex items-center">
+                    <div key={p.id} className={CART_TABLE_ROW}>
+                      <div className="flex w-12 shrink-0 items-center md:w-12">
                         <input
                           type="checkbox"
                           className="h-4 w-4 rounded border-neutral-300 accent-brand"
@@ -80,7 +87,7 @@ export default function ShoppingCartPage() {
                         />
                       </div>
 
-                      <div className="flex items-center gap-4">
+                      <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
                         <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
                           <img
                             src={p.images?.[0]?.url || ''}
@@ -97,11 +104,11 @@ export default function ShoppingCartPage() {
                         </div>
                       </div>
 
-                      <div className="text-right text-sm font-bold text-brand-dark">
+                      <div className="w-[100px] shrink-0 whitespace-nowrap text-right text-sm font-bold text-brand-dark tabular-nums">
                         ${price.toFixed(2)}
                       </div>
 
-                      <div className="flex items-center justify-start gap-3 md:justify-center">
+                      <div className="flex w-[152px] shrink-0 items-center justify-start gap-2 md:justify-center">
                         <button
                           type="button"
                           className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-neutral-300 text-neutral-900 transition-colors hover:border-brand hover:text-brand"
@@ -123,11 +130,11 @@ export default function ShoppingCartPage() {
                         </button>
                       </div>
 
-                      <div className="text-right text-sm font-bold text-brand-dark">
+                      <div className="w-[100px] shrink-0 whitespace-nowrap text-right text-sm font-bold text-brand-dark tabular-nums">
                         ${subtotal.toFixed(2)}
                       </div>
 
-                      <div className="flex justify-end">
+                      <div className="flex w-[52px] shrink-0 justify-end">
                         <button
                           type="button"
                           className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-neutral-300 text-red-600 transition-colors hover:border-red-300 hover:bg-red-50"
@@ -140,26 +147,30 @@ export default function ShoppingCartPage() {
                     </div>
                   )
                 })
-              ) : (
-                <div className="px-4 py-12 text-center">
-                  <p className="text-sm font-semibold text-muted">Your cart is empty.</p>
-                  <Link
-                    to="/shop"
-                    className="mt-4 inline-flex min-h-[44px] items-center justify-center rounded-md bg-brand px-6 text-sm font-bold text-white transition-opacity hover:opacity-90"
-                  >
-                    Go to Shop
-                  </Link>
+                  ) : (
+                    <div className="px-4 py-12 text-center">
+                      <p className="text-sm font-semibold text-muted">Your cart is empty.</p>
+                      <Link
+                        to="/shop"
+                        className="mt-4 inline-flex min-h-[44px] items-center justify-center rounded-md bg-brand px-6 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                      >
+                        Go to Shop
+                      </Link>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
-            <div className="flex items-center justify-between gap-4 bg-neutral-50 px-4 py-4">
+            <div className="flex items-center justify-between gap-4 border-t border-neutral-200 bg-neutral-50 px-4 py-4">
               <p className="text-sm font-semibold text-muted">Total (selected items)</p>
-              <p className="text-lg font-bold text-brand-dark">${productsTotal.toFixed(2)}</p>
+              <p className="shrink-0 text-lg font-bold text-brand-dark tabular-nums">
+                ${productsTotal.toFixed(2)}
+              </p>
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+          <aside className="w-full shrink-0 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm lg:w-[360px] lg:sticky lg:top-24">
             <p className="text-base font-bold text-brand-dark">Order Summary</p>
             <div className="mt-4 space-y-3 text-sm font-semibold">
               <div className="flex items-center justify-between text-muted">

@@ -2,10 +2,6 @@ import FeaturedPostCard from '../components/FeaturedPostCard'
 import HeroSection from '../components/HeroSection'
 import ProductCard from '../components/ProductCard'
 import TopProductWeekCard from '../components/TopProductWeekCard'
-import { Link } from 'react-router-dom'
-import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
-import { categoryRoute } from '../lib/category'
 
 import hooli from '../assets/hooli-brands.png'
 import lyft from '../assets/lyft-brands.png'
@@ -160,13 +156,6 @@ const featuredPosts = [
 ]
 
 export default function HomePage() {
-  const categories = useSelector((s) => s.product.categories)
-  const top5Categories = useMemo(() => {
-    const list = Array.isArray(categories) ? [...categories] : []
-    list.sort((a, b) => Number(b?.rating || 0) - Number(a?.rating || 0))
-    return list.slice(0, 5)
-  }, [categories])
-
   return (
     <div className="flex w-full max-w-[1920px] flex-col items-center gap-y-[80px] md:gap-y-0">
       <HeroSection />
@@ -186,52 +175,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto w-full px-3 pt-0 md:px-8 lg:px-[11%]">
-        <div className="mx-auto w-full max-w-[1440px]">
-          <h2 className="text-center text-xl font-bold text-brand-dark md:text-2xl">
-            Top Categories
-          </h2>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {top5Categories.map((c) => (
-              <Link
-                key={c.id}
-                to={categoryRoute(c)}
-                className="group relative block aspect-[4/5] w-full overflow-hidden bg-neutral-100"
-              >
-                <img
-                  src={c.img}
-                  alt={c.title}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/35 px-2 text-center text-white">
-                  <span className="text-base font-bold uppercase tracking-wide">
-                    {c.title}
-                  </span>
-                  <span className="mt-1 text-sm font-semibold">
-                    Rating {Number(c.rating || 0).toFixed(1)}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto flex w-full flex-col gap-4 px-3 pb-8 pt-0 md:grid md:grid-cols-2 md:gap-4 md:px-6 lg:flex lg:flex-row lg:items-stretch lg:gap-4 lg:px-[11%] lg:py-12">
+      <section className="mx-auto flex w-full flex-col gap-4 px-3 pb-8 pt-0 md:gap-4 md:px-6 lg:flex-row lg:items-stretch lg:gap-4 lg:px-[11%] lg:py-12">
         <TopProductWeekCard
           to="/shop"
           mobileImage={mobilTopProducts1}
           desktopImage={leftBanner}
-          cardClassName="group relative mx-auto w-full overflow-hidden rounded-none md:col-span-2 lg:mx-0 lg:flex lg:min-h-[572px] lg:flex-[1.4] lg:flex-col lg:justify-end"
+          cardClassName="group relative mx-auto w-full overflow-hidden rounded-none lg:mx-0 lg:flex lg:min-h-[572px] lg:flex-[1.4] lg:flex-col lg:justify-end"
           desktopVariant="left"
         />
 
-        <div className="flex w-full flex-col gap-4 md:col-span-2 md:grid md:grid-cols-2 lg:flex lg:flex-1 lg:min-w-0 lg:flex-col">
+        <div className="flex w-full flex-col gap-4 md:flex-row md:flex-wrap lg:flex-1 lg:min-w-0 lg:flex-col lg:flex-nowrap">
           <TopProductWeekCard
             to="/shop"
             mobileImage={mobilTopProducts2}
             desktopImage={rightTopBanner}
-            cardClassName="group relative mx-auto w-full overflow-hidden rounded-none lg:mx-0 lg:flex lg:min-h-[289px] lg:flex-1 lg:flex-col lg:justify-end"
+            cardClassName="group relative mx-auto w-full overflow-hidden rounded-none md:w-[calc(50%-8px)] lg:mx-0 lg:flex lg:min-h-[289px] lg:w-full lg:flex-1 lg:flex-col lg:justify-end"
             desktopVariant="right"
             desktopTitleOneLine="Top Product Of the Week"
           />
@@ -240,7 +198,7 @@ export default function HomePage() {
             to="/shop"
             mobileImage={mobilTopProducts3}
             desktopImage={rightBottomBanner}
-            cardClassName="group relative mx-auto w-full overflow-hidden rounded-none lg:mx-0 lg:flex lg:min-h-[289px] lg:flex-1 lg:flex-col lg:justify-end"
+            cardClassName="group relative mx-auto w-full overflow-hidden rounded-none md:w-[calc(50%-8px)] lg:mx-0 lg:flex lg:min-h-[289px] lg:w-full lg:flex-1 lg:flex-col lg:justify-end"
             desktopVariant="right"
             desktopTitleOneLine="Top Product Of the Week"
           />
@@ -270,14 +228,14 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8">
+        <div className="flex w-full flex-wrap gap-6 lg:gap-8">
           {products.map((p, i) => (
             <div
               key={p.id}
               className={
                 i >= 5
-                  ? 'hidden sm:flex sm:flex-col'
-                  : 'flex w-full flex-col'
+                  ? 'hidden w-full min-w-0 sm:flex sm:w-[calc(50%-12px)] sm:flex-col lg:w-[calc(20%-26px)]'
+                  : 'flex w-full min-w-0 flex-col sm:w-[calc(50%-12px)] lg:w-[calc(20%-26px)]'
               }
             >
               <ProductCard
