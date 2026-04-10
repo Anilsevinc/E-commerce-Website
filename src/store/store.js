@@ -4,6 +4,10 @@ import { createLogger } from 'redux-logger'
 
 import rootReducer from './rootReducer'
 import { getStoredToken } from './client/client.auth'
+import {
+  loadShoppingCartState,
+  saveShoppingCartState,
+} from './shoppingCart/shoppingCart.storage'
 import { loadWishlistState, saveWishlistState } from './wishlist/wishlist.storage'
 
 const logger = createLogger({ collapsed: true })
@@ -19,8 +23,14 @@ if (import.meta.env.DEV) {
 getStoredToken()
 
 const persistedWishlist = loadWishlistState()
+const persistedShoppingCart = loadShoppingCartState()
 const preloadedState =
-  persistedWishlist !== undefined ? { wishlist: persistedWishlist } : undefined
+  persistedWishlist !== undefined || persistedShoppingCart !== undefined
+    ? {
+        ...(persistedWishlist !== undefined ? { wishlist: persistedWishlist } : {}),
+        ...(persistedShoppingCart !== undefined ? { shoppingCart: persistedShoppingCart } : {}),
+      }
+    : undefined
 
 const store = createStore(
   rootReducer,
@@ -30,6 +40,7 @@ const store = createStore(
 
 store.subscribe(() => {
   saveWishlistState(store.getState().wishlist)
+  saveShoppingCartState(store.getState().shoppingCart)
 })
 
 export default store
