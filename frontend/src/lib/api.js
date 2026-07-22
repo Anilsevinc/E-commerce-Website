@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: 'https://workintech-fe-ecommerce.onrender.com',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
 })
 
 export function setApiAuthToken(token) {
@@ -11,4 +11,3 @@ export function setApiAuthToken(token) {
   }
   api.defaults.headers.common.Authorization = token
 }
-
