@@ -1,0 +1,117 @@
+﻿{
+    "value":  [
+                  {
+                      "id":  1,
+                      "code":  "k:tisort",
+                      "title":  "Tişört",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_kadın_tişört.jpg",
+                      "rating":  4.2,
+                      "gender":  "k"
+                  },
+                  {
+                      "id":  2,
+                      "code":  "k:ayakkabi",
+                      "title":  "Ayakkabı",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_kadın_ayakkabı.jpg",
+                      "rating":  4.9,
+                      "gender":  "k"
+                  },
+                  {
+                      "id":  3,
+                      "code":  "k:ceket",
+                      "title":  "Ceket",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_kadın_ceket.jpg",
+                      "rating":  3.8,
+                      "gender":  "k"
+                  },
+                  {
+                      "id":  4,
+                      "code":  "k:elbise",
+                      "title":  "Elbise",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_kadın_elbise.jpg",
+                      "rating":  4.1,
+                      "gender":  "k"
+                  },
+                  {
+                      "id":  5,
+                      "code":  "k:etek",
+                      "title":  "Etek",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_kadın_etek.jpg",
+                      "rating":  3.9,
+                      "gender":  "k"
+                  },
+                  {
+                      "id":  6,
+                      "code":  "k:gomlek",
+                      "title":  "Gömlek",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_kadın_gömlek.jpg",
+                      "rating":  3.1,
+                      "gender":  "k"
+                  },
+                  {
+                      "id":  7,
+                      "code":  "k:kazak",
+                      "title":  "Kazak",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_kadın_kazak.jpg",
+                      "rating":  2.9,
+                      "gender":  "k"
+                  },
+                  {
+                      "id":  8,
+                      "code":  "k:pantalon",
+                      "title":  "Pantalon",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_kadın_pantalon.jpg",
+                      "rating":  3.8,
+                      "gender":  "k"
+                  },
+                  {
+                      "id":  9,
+                      "code":  "e:ayakkabı",
+                      "title":  "Ayakkabı",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_erkek_ayakkabı.jpg",
+                      "rating":  4.6,
+                      "gender":  "e"
+                  },
+                  {
+                      "id":  10,
+                      "code":  "e:ceket",
+                      "title":  "Ceket",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_erkek_ceket.jpg",
+                      "rating":  4.1,
+                      "gender":  "e"
+                  },
+                  {
+                      "id":  11,
+                      "code":  "e:gomlek",
+                      "title":  "Gömlek",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_erkek_gömlek.jpg",
+                      "rating":  3.9,
+                      "gender":  "e"
+                  },
+                  {
+                      "id":  12,
+                      "code":  "e:kazak",
+                      "title":  "Kazak",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_erkek_kazak.jpg",
+                      "rating":  3.2,
+                      "gender":  "e"
+                  },
+                  {
+                      "id":  13,
+                      "code":  "e:pantalon",
+                      "title":  "Pantalon",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_erkek_pantalon.jpg",
+                      "rating":  3.5,
+                      "gender":  "e"
+                  },
+                  {
+                      "id":  14,
+                      "code":  "e:tisort",
+                      "title":  "Tişört",
+                      "img":  "https://workintech-fe-ecommerce.onrender.com/assets/category-img/category_erkek_tişört.jpg",
+                      "rating":  4.3,
+                      "gender":  "e"
+                  }
+              ],
+    "Count":  14
+}
