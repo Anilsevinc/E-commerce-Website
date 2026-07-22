@@ -1,5 +1,6 @@
 package com.ecommerce.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,14 +31,17 @@ public class Product {
 
     private Integer stock;
 
+    @JsonProperty("store_id")
     @Column(name = "store_id")
     private Long storeId;
 
+    @JsonProperty("category_id")
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
     private Double rating;
 
+    @JsonProperty("sell_count")
     @Column(name = "sell_count")
     private Integer sellCount;
 

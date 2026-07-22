@@ -5,13 +5,13 @@ import com.ecommerce.backend.entity.Product;
 import com.ecommerce.backend.entity.ProductImage;
 import com.ecommerce.backend.repository.CategoryRepository;
 import com.ecommerce.backend.repository.ProductRepository;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -23,16 +23,16 @@ public class DataSeeder implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     public DataSeeder(
             CategoryRepository categoryRepository,
             ProductRepository productRepository,
-            ObjectMapper objectMapper
+            JsonMapper jsonMapper
     ) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DataSeeder implements CommandLineRunner {
 
     private void seedCategories() throws Exception {
         try (InputStream input = new ClassPathResource("data/categories.json").getInputStream()) {
-            JsonNode root = objectMapper.readTree(input);
+            JsonNode root = jsonMapper.readTree(input);
             // PowerShell export sometimes wraps the array as { "value": [ ... ] }
             JsonNode categories = root.isArray() ? root : root.get("value");
 
@@ -78,7 +78,7 @@ public class DataSeeder implements CommandLineRunner {
 
     private void seedProducts() throws Exception {
         try (InputStream input = new ClassPathResource("data/products.json").getInputStream()) {
-            JsonNode root = objectMapper.readTree(input);
+            JsonNode root = jsonMapper.readTree(input);
             JsonNode products = root.get("products");
 
             if (products == null || !products.isArray()) {
