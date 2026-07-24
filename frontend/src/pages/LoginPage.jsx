@@ -46,8 +46,8 @@ export default function LoginPage() {
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        'Login failed. Please check your credentials.'
+        err?.response?.data?.detail ||
+        'Email or password is incorrect.'
       toast.error(String(msg), { autoClose: 5000 })
     } finally {
       setIsSubmitting(false)

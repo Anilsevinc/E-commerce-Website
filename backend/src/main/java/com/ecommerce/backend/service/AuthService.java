@@ -76,10 +76,13 @@ public class AuthService {
     @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         UserAccount user = userRepository.findByEmailIgnoreCase(request.getEmail().trim())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Email or password is incorrect"
+                ));
 
         if (!user.isActive() || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email or password is incorrect");
         }
 
         String token = jwtService.generateToken(user.getEmail());
